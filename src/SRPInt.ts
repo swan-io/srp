@@ -1,21 +1,21 @@
-import { BigInteger } from "jsbn";
+import { modPow } from "bigint-mod-arith";
 import { getRandomValues } from "./crypto";
 import { bufferToHex } from "./utils";
 
 const bi = Symbol("big-int");
 
 export class SRPInt {
-  [bi]: BigInteger;
+  [bi]: bigint;
 
-  constructor(bigInt: BigInteger, public hexLength: number | null) {
+  constructor(bigInt: bigint, public hexLength: number | null) {
     this[bi] = bigInt;
   }
 
-  static ZERO = new SRPInt(new BigInteger("0"), null);
+  static ZERO = new SRPInt(BigInt(0), null);
 
   static fromHex(hex: string): SRPInt {
     const sanitized = hex.replace(/\s+/g, "").toLowerCase();
-    return new SRPInt(new BigInteger(sanitized, 16), sanitized.length);
+    return new SRPInt(BigInt("0x" + sanitized), sanitized.length);
   }
 
   static getRandom(bytes: number): SRPInt {
@@ -25,26 +25,26 @@ export class SRPInt {
   }
 
   add(value: SRPInt): SRPInt {
-    return new SRPInt(this[bi].add(value[bi]), null);
+    return new SRPInt(this[bi] + value[bi], null);
   }
 
   equals(value: SRPInt): boolean {
-    return this[bi].equals(value[bi]);
+    return this[bi] == value[bi];
   }
 
   mod(modulus: SRPInt): SRPInt {
-    return new SRPInt(this[bi].mod(modulus[bi]), modulus.hexLength);
+    return new SRPInt(this[bi] % modulus[bi], modulus.hexLength);
   }
 
   modPow(exponent: SRPInt, modulus: SRPInt): SRPInt {
     return new SRPInt(
-      this[bi].modPow(exponent[bi], modulus[bi]),
+      modPow(this[bi], exponent[bi], modulus[bi]),
       modulus.hexLength,
     );
   }
 
   multiply(value: SRPInt): SRPInt {
-    return new SRPInt(this[bi].multiply(value[bi]), null);
+    return new SRPInt(this[bi] * value[bi], null);
   }
 
   pad(paddedHexLength: number): SRPInt {
@@ -56,7 +56,7 @@ export class SRPInt {
   }
 
   subtract(value: SRPInt): SRPInt {
-    return new SRPInt(this[bi].subtract(value[bi]), this.hexLength);
+    return new SRPInt(this[bi] - value[bi], this.hexLength);
   }
 
   toHex(): string {
@@ -68,6 +68,6 @@ export class SRPInt {
   }
 
   xor(value: SRPInt): SRPInt {
-    return new SRPInt(this[bi].xor(value[bi]), this.hexLength);
+    return new SRPInt(this[bi] ^ value[bi], this.hexLength);
   }
 }

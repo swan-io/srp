@@ -49,10 +49,9 @@
     "trailingComma": "all"
   },
   "dependencies": {
-    "jsbn": "^1.1.0"
+    "bigint-mod-arith": "^3.1.2"
   },
   "devDependencies": {
-    "@types/jsbn": "^1.2.30",
     "arraybuffer-equal": "^1.0.4",
     "microbundle": "^0.15.1",
     "prettier": "^2.8.4",
