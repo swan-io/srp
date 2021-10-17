@@ -157,7 +157,7 @@ FC026E47 9558E447 5677E9AA 9E3050E2 765694DF C81F56E8 80B96E71
 };
 
 // const group = {
-//   largeSafePrime: `
+//   N: `
 //     AC6BDB41 324A9A9B F166DE5E 1389582F AF72B665 1987EE07 FC319294
 //     3DB56050 A37329CB B4A099ED 8193E075 7767A13D D52312AB 4B03310D
 //     CD7F48A9 DA04FD50 E8083969 EDB767B0 CF609517 9A163AB3 661A05FB
@@ -169,28 +169,17 @@ FC026E47 9558E447 5677E9AA 9E3050E2 765694DF C81F56E8 80B96E71
 //     94B5C803 D89F7AE4 35DE236D 525F5475 9B65E372 FCD68EF2 0FA7111F
 //     9E4AFF73
 //   `,
-//   generatorModulo: "02",
+//   g: "02",
 //   hashFunction: "sha256",
 //   hashOutputBytes: 256 / 8,
 //   paddedLength: 512,
 // };
-
-// const pad = (integer: SRPInt) => integer.pad(group.paddedLength);
 
 // N      A large safe prime (N = 2q+1, where q is prime)
 // g      A generator modulo N
 // k      Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
 // H()    One-way hash function
 // PAD()  Pad the number to have the same number of bytes as N
-
-// export const params = {
-//   N,
-//   g,
-//   k: sha256(N, pad(g)),
-//   H: sha256,
-//   PAD: pad,
-//   hashOutputBytes: group.hashOutputBytes,
-// };
 
 export const getParams = (algorithm: "SHA-1" | "SHA-256", groupName: Group) => {
   const group = groups[groupName];
@@ -199,16 +188,15 @@ export const getParams = (algorithm: "SHA-1" | "SHA-256", groupName: Group) => {
   const g = SRPInt.fromHex(padHex(group.g)); // TODO: Make sure EVERY hex is padded (throw if hex % 2 !== 0)
 
   const paddedLength = N.toHex().length;
-  // console.log({ paddedLength });
 
   const PAD = (integer: SRPInt) => integer.pad(paddedLength);
   const H = (...input: (SRPInt | string)[]) => hash(algorithm, ...input);
   const k = hash(algorithm, N, PAD(g));
 
   if (algorithm === "SHA-1") {
-    return { N, g, k, H, PAD, hashOutputBytes: 160 / 8 }; // * 2 seems OK?
+    return { N, g, k, H, PAD, hashOutputBytes: 160 / 8 };
   } else {
-    return { N, g, k, H, PAD, hashOutputBytes: 256 / 8 }; // * 2 seems OK?
+    return { N, g, k, H, PAD, hashOutputBytes: 256 / 8 };
   }
 };
 
