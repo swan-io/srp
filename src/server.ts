@@ -1,8 +1,9 @@
-import { params } from "./params";
+import { Params } from "./params";
 import { SRPInt } from "./SRPInt";
 import { Ephemeral, Session } from "./types";
 
 export const generateEphemeral = async (
+  params: Params,
   verifier: string,
 ): Promise<Ephemeral> => {
   // N      A large safe prime (N = 2q+1, where q is prime)
@@ -25,6 +26,7 @@ export const generateEphemeral = async (
 };
 
 export const deriveSession = async (
+  params: Params,
   serverSecretEphemeral: string,
   clientPublicEphemeral: string,
   salt: string,

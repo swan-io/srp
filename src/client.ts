@@ -1,8 +1,8 @@
-import { params } from "./params";
+import { Params } from "./params";
 import { SRPInt } from "./SRPInt";
 import { Ephemeral, Session } from "./types";
 
-export const generateSalt = (): string => {
+export const generateSalt = (params: Params): string => {
   // s      User's salt
   const s = SRPInt.getRandom(params.hashOutputBytes);
 
@@ -10,6 +10,7 @@ export const generateSalt = (): string => {
 };
 
 export const derivePrivateKey = async (
+  params: Params,
   salt: string,
   username: string,
   password: string,
@@ -30,7 +31,7 @@ export const derivePrivateKey = async (
   return x.toHex();
 };
 
-export const deriveVerifier = (privateKey: string): string => {
+export const deriveVerifier = (params: Params, privateKey: string): string => {
   // N      A large safe prime (N = 2q+1, where q is prime)
   // g      A generator modulo N
   const { N, g } = params;
@@ -44,7 +45,7 @@ export const deriveVerifier = (privateKey: string): string => {
   return v.toHex();
 };
 
-export const generateEphemeral = (): Ephemeral => {
+export const generateEphemeral = (params: Params): Ephemeral => {
   // N      A large safe prime (N = 2q+1, where q is prime)
   // g      A generator modulo N
   const { N, g } = params;
@@ -60,6 +61,7 @@ export const generateEphemeral = (): Ephemeral => {
 };
 
 export const deriveSession = async (
+  params: Params,
   clientSecretEphemeral: string,
   serverPublicEphemeral: string,
   salt: string,
@@ -116,6 +118,7 @@ export const deriveSession = async (
 };
 
 export const verifySession = async (
+  params: Params,
   clientPublicEphemeral: string,
   clientSession: Session,
   serverSessionProof: string,

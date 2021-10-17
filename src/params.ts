@@ -196,19 +196,19 @@ export const getParams = (algorithm: "SHA-1" | "SHA-256", groupName: Group) => {
   const group = groups[groupName];
 
   const N = SRPInt.fromHex(group.N);
-  const paddedLength = N.toHex().length;
   const g = SRPInt.fromHex(padHex(group.g)); // TODO: Make sure EVERY hex is padded (throw if hex % 2 !== 0)
 
-  console.log({ paddedLength });
+  const paddedLength = N.toHex().length;
+  // console.log({ paddedLength });
 
   const PAD = (integer: SRPInt) => integer.pad(paddedLength);
   const H = (...input: (SRPInt | string)[]) => hash(algorithm, ...input);
   const k = hash(algorithm, N, PAD(g));
 
   if (algorithm === "SHA-1") {
-    return { N, g, k, H, PAD, hashOutputBytes: 160 / 8 };
+    return { N, g, k, H, PAD, hashOutputBytes: 160 / 8 }; // * 2 seems OK?
   } else {
-    return { N, g, k, H, PAD, hashOutputBytes: 256 / 8 };
+    return { N, g, k, H, PAD, hashOutputBytes: 256 / 8 }; // * 2 seems OK?
   }
 };
 
