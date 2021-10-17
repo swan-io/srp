@@ -1,11 +1,11 @@
-import { Entity, ErrorCode } from "./types";
+import { ErrorCode } from "./types";
 
 export class SRPError extends Error {
-  constructor(public entity: Entity, public code: ErrorCode) {
+  constructor(public responsible: "client" | "server", public code: ErrorCode) {
     super(
       code === "InvalidPublicEphemeral"
-        ? `The ${entity} sent an invalid public ephemeral`
-        : `${entity} provided session proof is invalid`,
+        ? `The ${responsible.toLowerCase()} sent an invalid public ephemeral`
+        : `The ${responsible.toLowerCase()} provided an invalid session proof`,
     );
 
     this.name = this.constructor.name;
