@@ -4,8 +4,8 @@ export class SRPError extends Error {
   constructor(public responsible: "client" | "server", public code: ErrorCode) {
     super(
       code === "InvalidPublicEphemeral"
-        ? `The ${responsible.toLowerCase()} sent an invalid public ephemeral`
-        : `The ${responsible.toLowerCase()} provided an invalid session proof`,
+        ? `The ${responsible} sent an invalid public ephemeral`
+        : `The ${responsible} provided an invalid session proof`,
     );
 
     this.name = this.constructor.name;
