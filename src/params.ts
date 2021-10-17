@@ -163,7 +163,8 @@ export const getParams = (
   const group = primeGroups[primeGroup];
 
   const N = SRPInt.fromHex(group.N);
-  const g = SRPInt.fromHex(padHex(group.g)); // TODO: Make sure every hex is padded (throw if hex % 2 !== 0)
+  // TODO: Remove support for hex that are not % 2 and the need for kHexLength
+  const g = SRPInt.fromHex(padHex(group.g));
 
   const paddedLength = N.toHex().length;
 

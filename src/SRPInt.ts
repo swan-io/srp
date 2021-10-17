@@ -23,7 +23,8 @@ export class SRPInt {
   }
 
   static fromHex(hex: string): SRPInt {
-    const sanitized = sanitizeHex(hex); // TODO: Remove support for hex that are not % 2 & kHexLength
+    // TODO: Remove support for hex that are not % 2 and the need for kHexLength
+    const sanitized = sanitizeHex(hex);
     return new SRPInt(new BigInteger(sanitized, 16), sanitized.length);
   }
 
