@@ -1,5 +1,5 @@
-import { SRPError } from "./errors";
 import { getParams } from "./params";
+import { SRPError } from "./SRPError";
 import { SRPInt } from "./SRPInt";
 import { Ephemeral, Session } from "./types";
 
