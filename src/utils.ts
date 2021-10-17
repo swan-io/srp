@@ -4,8 +4,8 @@ export const sanitizeHex = (hex: string) =>
 export const padHex = (hex: string) => (hex.length % 2 === 0 ? hex : "0" + hex);
 
 export const bufferToHex = (buffer: ArrayBuffer): string => {
-  let hex = "";
   const array = new Uint8Array(buffer);
+  let hex = "";
 
   for (let i = 0; i < array.length; i++) {
     const value = array[i].toString(16);
@@ -16,7 +16,10 @@ export const bufferToHex = (buffer: ArrayBuffer): string => {
 };
 
 export const hexToBuffer = (hex: string): ArrayBuffer => {
-  // hex = padHex(hex); Not needed for the moment
+  if (hex.length % 2 !== 0) {
+    throw new RangeError("Expected string to be an even number of characters");
+  }
+
   const array = new Uint8Array(hex.length / 2);
 
   for (let i = 0; i < hex.length; i += 2) {
