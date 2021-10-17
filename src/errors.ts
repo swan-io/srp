@@ -1,5 +1,4 @@
-import { Entity } from ".";
-import { ErrorCode } from "./types";
+import { Entity, ErrorCode } from "./types";
 
 export class SRPError extends Error {
   constructor(public entity: Entity, public code: ErrorCode) {
