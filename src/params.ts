@@ -176,12 +176,6 @@ FC026E47 9558E447 5677E9AA 9E3050E2 765694DF C81F56E8 80B96E71
 //   paddedLength: 512,
 // };
 
-// N      A large safe prime (N = 2q+1, where q is prime)
-// g      A generator modulo N
-// k      Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
-// H()    One-way hash function
-// PAD()  Pad the number to have the same number of bytes as N
-
 export const getParams = (algorithm: HashAlgorithm, groupName: Group) => {
   const group = groups[groupName];
 

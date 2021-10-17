@@ -7,9 +7,7 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
 
   return {
     generateSalt: (): string => {
-      // s      User's salt
-      const s = SRPInt.getRandom(hashBytes);
-
+      const s = SRPInt.getRandom(hashBytes); // User's salt
       return s.toHex();
     },
 
@@ -18,32 +16,27 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
       username: string,
       password: string,
     ): Promise<string> => {
-      // s      User's salt
-      // I      Username
-      // p      Cleartext Password
-      const s = SRPInt.fromHex(salt);
-      const I = String(username);
-      const p = String(password);
+      const s = SRPInt.fromHex(salt); // User's salt
+      const I = String(username); // Username
+      const p = String(password); // Cleartext Password
 
       // x = H(s, H(I | ':' | p))  (s is chosen randomly)
       const x = await H(s, await H(`${I}:${p}`));
-
       return x.toHex();
     },
 
     deriveVerifier: (privateKey: string): string => {
-      // x      Private key (derived from p and s)
-      const x = SRPInt.fromHex(privateKey);
+      const x = SRPInt.fromHex(privateKey); // Private key (derived from p and s)
 
-      // v = g^x                   (computes password verifier)
+      // v = g^x  (computes password verifier)
       const v = g.modPow(x, N);
-
       return v.toHex();
     },
 
     generateEphemeral: (): Ephemeral => {
-      // A = g^a                  (a = random number)
       const a = SRPInt.getRandom(hashBytes);
+
+      // A = g^a  (a = random number)
       const A = g.modPow(a, N);
 
       return {
@@ -59,18 +52,13 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
       username: string,
       privateKey: string,
     ): Promise<Session> => {
-      // a      Secret ephemeral values
-      // B      Public ephemeral values
-      // s      User's salt
-      // I      Username
-      // x      Private key (derived from p and s)
-      const a = SRPInt.fromHex(clientSecretEphemeral);
-      const B = SRPInt.fromHex(serverPublicEphemeral);
-      const s = SRPInt.fromHex(salt);
-      const I = String(username);
-      const x = SRPInt.fromHex(privateKey);
+      const a = SRPInt.fromHex(clientSecretEphemeral); // Secret ephemeral values
+      const B = SRPInt.fromHex(serverPublicEphemeral); // Public ephemeral values
+      const s = SRPInt.fromHex(salt); // User's salt
+      const I = String(username); // Username
+      const x = SRPInt.fromHex(privateKey); // Private key (derived from p and s)
 
-      // A = g^a                  (a = random number)
+      // A = g^a  (a = random number)
       const A = g.modPow(a, N);
 
       // B % N > 0
@@ -105,12 +93,9 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
       clientSession: Session,
       serverSessionProof: string,
     ): Promise<void> => {
-      // A      Public ephemeral values
-      // M      Proof of K
-      // K      Shared, strong session key
-      const A = SRPInt.fromHex(clientPublicEphemeral);
-      const M = SRPInt.fromHex(clientSession.proof);
-      const K = SRPInt.fromHex(clientSession.key);
+      const A = SRPInt.fromHex(clientPublicEphemeral); // Public ephemeral values
+      const M = SRPInt.fromHex(clientSession.proof); // Proof of K
+      const K = SRPInt.fromHex(clientSession.key); // Shared, strong session key
 
       // H(A, M, K)
       const expected = await H(A, M, K);

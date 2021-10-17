@@ -2,7 +2,19 @@ import { createSRPClient, createSRPServer } from "../src";
 import { getParams } from "../src/params";
 import { SRPInt } from "../src/SRPInt";
 
-test("should authenticate a user", async () => {
+test("SRPInt should keep padding when going back and forth", () => {
+  expect(SRPInt.fromHex("a").toHex()).toStrictEqual("a");
+  expect(SRPInt.fromHex("0a").toHex()).toStrictEqual("0a");
+  expect(SRPInt.fromHex("00a").toHex()).toStrictEqual("00a");
+  expect(SRPInt.fromHex("000a").toHex()).toStrictEqual("000a");
+  expect(SRPInt.fromHex("0000a").toHex()).toStrictEqual("0000a");
+  expect(SRPInt.fromHex("00000a").toHex()).toStrictEqual("00000a");
+  expect(SRPInt.fromHex("000000a").toHex()).toStrictEqual("000000a");
+  expect(SRPInt.fromHex("0000000a").toHex()).toStrictEqual("0000000a");
+  expect(SRPInt.fromHex("00000000a").toHex()).toStrictEqual("00000000a");
+});
+
+test("LinusU/secure-remote-password test vector", async () => {
   const client = createSRPClient("SHA-256", 2048);
   const server = createSRPServer("SHA-256", 2048);
 
@@ -42,19 +54,7 @@ test("should authenticate a user", async () => {
   expect(clientSession.key).toStrictEqual(serverSession.key);
 });
 
-test("SRPInt should keep padding when going back and forth", () => {
-  expect(SRPInt.fromHex("a").toHex()).toStrictEqual("a");
-  expect(SRPInt.fromHex("0a").toHex()).toStrictEqual("0a");
-  expect(SRPInt.fromHex("00a").toHex()).toStrictEqual("00a");
-  expect(SRPInt.fromHex("000a").toHex()).toStrictEqual("000a");
-  expect(SRPInt.fromHex("0000a").toHex()).toStrictEqual("0000a");
-  expect(SRPInt.fromHex("00000a").toHex()).toStrictEqual("00000a");
-  expect(SRPInt.fromHex("000000a").toHex()).toStrictEqual("000000a");
-  expect(SRPInt.fromHex("0000000a").toHex()).toStrictEqual("0000000a");
-  expect(SRPInt.fromHex("00000000a").toHex()).toStrictEqual("00000000a");
-});
-
-test("should match known test vector", async () => {
+test("org.bouncycastle.tls.crypto.impl.jcajce.srp test vector", async () => {
   const testVector = {
     H: "SHA-256" as const,
     size: 2048 as const,
@@ -121,7 +121,7 @@ test("should match known test vector", async () => {
 });
 
 // https://datatracker.ietf.org/doc/html/rfc5054#appendix-B
-test("should match rfc5054 test vector", async () => {
+test("RFC 5054 test vector", async () => {
   const testVector = {
     H: "SHA-1" as const,
     size: 1024 as const,

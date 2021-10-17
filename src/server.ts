@@ -7,10 +7,9 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
 
   return {
     generateEphemeral: async (verifier: string): Promise<Ephemeral> => {
-      // v      Password verifier
-      const v = SRPInt.fromHex(verifier);
+      const v = SRPInt.fromHex(verifier); // Password verifier
 
-      // B = kv + g^b             (b = random number)
+      // B = kv + g^b  (b = random number)
       const b = SRPInt.getRandom(hashBytes);
       const B = (await k).multiply(v).add(g.modPow(b, N)).mod(N);
 
@@ -28,19 +27,13 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
       verifier: string,
       clientSessionProof: string,
     ): Promise<Session> => {
-      // b      Secret ephemeral values
-      // A      Public ephemeral values
-      // s      User's salt
-      // p      Cleartext Password
-      // I      Username
-      // v      Password verifier
-      const b = SRPInt.fromHex(serverSecretEphemeral);
-      const A = SRPInt.fromHex(clientPublicEphemeral);
-      const s = SRPInt.fromHex(salt);
-      const I = String(username);
-      const v = SRPInt.fromHex(verifier);
+      const b = SRPInt.fromHex(serverSecretEphemeral); // Secret ephemeral values
+      const A = SRPInt.fromHex(clientPublicEphemeral); // Public ephemeral values
+      const s = SRPInt.fromHex(salt); // User's salt
+      const I = String(username); // Username
+      const v = SRPInt.fromHex(verifier); // Password verifier
 
-      // B = kv + g^b             (b = random number)
+      // B = kv + g^b  (b = random number)
       const B = (await k).multiply(v).add(g.modPow(b, N)).mod(N);
 
       // A % N > 0
@@ -52,7 +45,7 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
       // u = H(PAD(A), PAD(B))
       const u = await H(PAD(A), PAD(B));
 
-      // S = (Av^u) ^ b              (computes session key)
+      // S = (Av^u) ^ b  (computes session key)
       const S = A.multiply(v.modPow(u, N)).modPow(b, N);
 
       // K = H(S)
