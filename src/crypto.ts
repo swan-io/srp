@@ -14,14 +14,15 @@ export const getRandomValues = (array: Uint8Array): void => {
   webcrypto && webcrypto.getRandomValues(array);
 };
 
-export const digest = (
+export const digest = async (
   hashAlgorithm: HashAlgorithm,
   data: ArrayBuffer,
-): Promise<ArrayBuffer> =>
-  webcrypto && webcrypto.subtle
-    ? webcrypto.subtle.digest(hashAlgorithm, data)
-    : Promise.reject(
-        new Error(
-          "WebCrypto is only available on Node.js 15+ and supported browsers (in secure context)",
-        ),
-      );
+): Promise<ArrayBuffer> => {
+  if (webcrypto && webcrypto.subtle) {
+    return webcrypto.subtle.digest(hashAlgorithm, data);
+  } else {
+    throw new Error(
+      "WebCrypto is only available on Node.js 15+ and supported browsers (in secure context)",
+    );
+  }
+};
