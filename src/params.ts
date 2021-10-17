@@ -167,8 +167,8 @@ export const getParams = (
   const paddedHexLength = N.toHex().length;
 
   const PAD = (integer: SRPInt) => integer.pad(paddedHexLength);
-  const k = hash(hashAlgorithm, N, PAD(g));
   const H = (...input: (SRPInt | string)[]) => hash(hashAlgorithm, ...input);
+  const k = H(N, PAD(g));
 
   return {
     N, // A large safe prime (N = 2q+1, where q is prime)
