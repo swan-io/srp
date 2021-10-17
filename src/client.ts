@@ -2,18 +2,18 @@ import { params } from "./params";
 import { SRPInt } from "./SRPInt";
 import { Ephemeral, Session } from "./types";
 
-export function generateSalt(): string {
+export const generateSalt = (): string => {
   // s      User's salt
   const s = SRPInt.randomInteger(params.hashOutputBytes);
 
   return s.toHex();
-}
+};
 
-export async function derivePrivateKey(
+export const derivePrivateKey = async (
   salt: string,
   username: string,
   password: string,
-): Promise<string> {
+): Promise<string> => {
   // H()    One-way hash function
   const { H } = params;
 
@@ -28,9 +28,9 @@ export async function derivePrivateKey(
   const x = await H(s, await H(`${I}:${p}`));
 
   return x.toHex();
-}
+};
 
-export function deriveVerifier(privateKey: string): string {
+export const deriveVerifier = (privateKey: string): string => {
   // N      A large safe prime (N = 2q+1, where q is prime)
   // g      A generator modulo N
   const { N, g } = params;
@@ -42,9 +42,9 @@ export function deriveVerifier(privateKey: string): string {
   const v = g.modPow(x, N);
 
   return v.toHex();
-}
+};
 
-export function generateEphemeral(): Ephemeral {
+export const generateEphemeral = (): Ephemeral => {
   // N      A large safe prime (N = 2q+1, where q is prime)
   // g      A generator modulo N
   const { N, g } = params;
@@ -57,15 +57,15 @@ export function generateEphemeral(): Ephemeral {
     secret: a.toHex(),
     public: A.toHex(),
   };
-}
+};
 
-export async function deriveSession(
+export const deriveSession = async (
   clientSecretEphemeral: string,
   serverPublicEphemeral: string,
   salt: string,
   username: string,
   privateKey: string,
-): Promise<Session> {
+): Promise<Session> => {
   // N      A large safe prime (N = 2q+1, where q is prime)
   // g      A generator modulo N
   // k      Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
@@ -113,13 +113,13 @@ export async function deriveSession(
     key: K.toHex(),
     proof: M.toHex(),
   };
-}
+};
 
-export async function verifySession(
+export const verifySession = async (
   clientPublicEphemeral: string,
   clientSession: Session,
   serverSessionProof: string,
-): Promise<void> {
+): Promise<void> => {
   // H()    One-way hash function
   const { H } = params;
 
@@ -138,4 +138,4 @@ export async function verifySession(
     // fixme: .code, .statusCode, etc.
     throw new Error("Server provided session proof is invalid");
   }
-}
+};

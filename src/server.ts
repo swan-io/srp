@@ -2,7 +2,9 @@ import { params } from "./params";
 import { SRPInt } from "./SRPInt";
 import { Ephemeral, Session } from "./types";
 
-export async function generateEphemeral(verifier: string): Promise<Ephemeral> {
+export const generateEphemeral = async (
+  verifier: string,
+): Promise<Ephemeral> => {
   // N      A large safe prime (N = 2q+1, where q is prime)
   // g      A generator modulo N
   // k      Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
@@ -20,16 +22,16 @@ export async function generateEphemeral(verifier: string): Promise<Ephemeral> {
     secret: b.toHex(),
     public: B.toHex(),
   };
-}
+};
 
-export async function deriveSession(
+export const deriveSession = async (
   serverSecretEphemeral: string,
   clientPublicEphemeral: string,
   salt: string,
   username: string,
   verifier: string,
   clientSessionProof: string,
-): Promise<Session> {
+): Promise<Session> => {
   // N      A large safe prime (N = 2q+1, where q is prime)
   // g      A generator modulo N
   // k      Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
@@ -86,4 +88,4 @@ export async function deriveSession(
     key: K.toHex(),
     proof: P.toHex(),
   };
-}
+};

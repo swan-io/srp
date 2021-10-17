@@ -20,9 +20,7 @@ const input = {
   paddedLength: 512,
 };
 
-function pad(integer: SRPInt) {
-  return integer.pad(input.paddedLength);
-}
+const pad = (integer: SRPInt) => integer.pad(input.paddedLength);
 
 // N      A large safe prime (N = 2q+1, where q is prime)
 // g      A generator modulo N

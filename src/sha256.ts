@@ -2,9 +2,9 @@ import { hash } from "./crypto";
 import { SRPInt } from "./SRPInt";
 import { bufferToHex, hexToBuffer } from "./utils";
 
-export const encodeUtf8 = TextEncoder.prototype.encode.bind(new TextEncoder());
+const encodeUtf8 = TextEncoder.prototype.encode.bind(new TextEncoder());
 
-export async function sha256(...input: (SRPInt | string)[]) {
+export const sha256 = async (...input: (SRPInt | string)[]) => {
   const buffers = input.map((item) =>
     typeof item === "string" ? encodeUtf8(item) : hexToBuffer(item.toHex()),
   );
@@ -19,4 +19,4 @@ export async function sha256(...input: (SRPInt | string)[]) {
   }, 0);
 
   return SRPInt.fromHex(bufferToHex(await hash(combined.buffer)));
-}
+};

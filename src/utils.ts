@@ -1,4 +1,4 @@
-export function bufferToHex(buffer: ArrayBuffer): string {
+export const bufferToHex = (buffer: ArrayBuffer): string => {
   let hex = "";
   const array = new Uint8Array(buffer);
 
@@ -8,9 +8,9 @@ export function bufferToHex(buffer: ArrayBuffer): string {
   }
 
   return hex;
-}
+};
 
-export function hexToBuffer(hex: string): ArrayBuffer {
+export const hexToBuffer = (hex: string): ArrayBuffer => {
   hex = hex.length % 2 !== 0 ? "0" + hex : hex;
   const array = new Uint8Array(hex.length / 2);
 
@@ -19,4 +19,4 @@ export function hexToBuffer(hex: string): ArrayBuffer {
   }
 
   return array.buffer;
-}
+};
