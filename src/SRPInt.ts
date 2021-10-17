@@ -3,15 +3,12 @@ import { getRandomValues } from "./crypto";
 import { bufferToHex, sanitizeHex } from "./utils";
 
 const kBigInt = Symbol("big-int");
-const kLength = Symbol("hex-length");
 
 export class SRPInt {
   [kBigInt]: BigInteger;
-  [kLength]: number | null;
 
-  constructor(bigInt: BigInteger, length: number | null) {
+  constructor(bigInt: BigInteger, public hexLength: number | null) {
     this[kBigInt] = bigInt;
-    this[kLength] = length;
   }
 
   static ZERO = new SRPInt(new BigInteger("0"), null);
@@ -28,13 +25,11 @@ export class SRPInt {
   }
 
   toHex(): string {
-    const length = this[kLength];
-
-    if (length === null) {
+    if (this.hexLength === null) {
       throw new Error("This SRPInt has no specified length");
     }
 
-    return this[kBigInt].toString(16).padStart(length, "0");
+    return this[kBigInt].toString(16).padStart(this.hexLength, "0");
   }
 
   equals(value: SRPInt): boolean {
@@ -46,7 +41,7 @@ export class SRPInt {
   }
 
   subtract(value: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].subtract(value[kBigInt]), this[kLength]);
+    return new SRPInt(this[kBigInt].subtract(value[kBigInt]), this.hexLength);
   }
 
   multiply(value: SRPInt): SRPInt {
@@ -54,27 +49,25 @@ export class SRPInt {
   }
 
   xor(value: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].xor(value[kBigInt]), this[kLength]);
+    return new SRPInt(this[kBigInt].xor(value[kBigInt]), this.hexLength);
   }
 
   mod(modulus: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].mod(modulus[kBigInt]), modulus[kLength]);
+    return new SRPInt(this[kBigInt].mod(modulus[kBigInt]), modulus.hexLength);
   }
 
   modPow(exponent: SRPInt, modulus: SRPInt): SRPInt {
     return new SRPInt(
       this[kBigInt].modPow(exponent[kBigInt], modulus[kBigInt]),
-      modulus[kLength],
+      modulus.hexLength,
     );
   }
 
-  pad(paddedLength: number): SRPInt {
-    const length = this[kLength];
-
-    if (length !== null && paddedLength < length) {
+  pad(paddedHexLength: number): SRPInt {
+    if (this.hexLength !== null && paddedHexLength < this.hexLength) {
       throw new Error("Cannot pad to a shorter length");
     }
 
-    return new SRPInt(this[kBigInt], paddedLength);
+    return new SRPInt(this[kBigInt], paddedHexLength);
   }
 }
