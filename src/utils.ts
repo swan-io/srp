@@ -3,8 +3,7 @@ export const bufferToHex = (buffer: ArrayBuffer): string => {
   let hex = "";
 
   for (let i = 0; i < array.length; i++) {
-    const value = array[i].toString(16);
-    hex += value.length === 1 ? "0" + value : value;
+    hex += array[i].toString(16).padStart(2, "0");
   }
 
   return hex;
