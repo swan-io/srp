@@ -164,9 +164,9 @@ export const getParams = (
   const N = SRPInt.fromHex(group.N);
   const g = SRPInt.fromHex(group.g);
 
-  const paddedHexLength = N.toHex().length;
+  const paddedLength = N.toHex().length;
 
-  const PAD = (integer: SRPInt) => integer.pad(paddedHexLength);
+  const PAD = (integer: SRPInt) => integer.pad(paddedLength);
   const H = (...input: (SRPInt | string)[]) => hash(hashAlgorithm, ...input);
   const k = H(N, PAD(g));
 

@@ -3,18 +3,18 @@ import { getRandomValues } from "./crypto";
 import { bufferToHex, sanitizeHex } from "./utils";
 
 const kBigInt = Symbol("big-int");
-const kHexLength = Symbol("hex-length");
+const kLength = Symbol("hex-length");
 
 export class SRPInt {
   [kBigInt]: BigInteger;
-  [kHexLength]: number | null;
+  [kLength]: number | null;
 
-  constructor(bigInt: BigInteger, hexLength: number | null) {
+  constructor(bigInt: BigInteger, length: number | null = null) {
     this[kBigInt] = bigInt;
-    this[kHexLength] = hexLength;
+    this[kLength] = length;
   }
 
-  static ZERO = new SRPInt(new BigInteger("0"), null);
+  static ZERO = new SRPInt(new BigInteger("0"));
 
   static getRandom(bytes: number): SRPInt {
     const array = new Uint8Array(bytes);
@@ -28,13 +28,13 @@ export class SRPInt {
   }
 
   toHex(): string {
-    const hexLength = this[kHexLength];
+    const length = this[kLength];
 
-    if (hexLength === null) {
+    if (length === null) {
       throw new Error("This SRPInt has no specified length");
     }
 
-    return this[kBigInt].toString(16).padStart(hexLength, "0");
+    return this[kBigInt].toString(16).padStart(length, "0");
   }
 
   equals(value: SRPInt): boolean {
@@ -42,39 +42,39 @@ export class SRPInt {
   }
 
   add(value: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].add(value[kBigInt]), null);
+    return new SRPInt(this[kBigInt].add(value[kBigInt]));
   }
 
   subtract(value: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].subtract(value[kBigInt]), this[kHexLength]);
+    return new SRPInt(this[kBigInt].subtract(value[kBigInt]), this[kLength]);
   }
 
   multiply(value: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].multiply(value[kBigInt]), null);
+    return new SRPInt(this[kBigInt].multiply(value[kBigInt]));
   }
 
   xor(value: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].xor(value[kBigInt]), this[kHexLength]);
+    return new SRPInt(this[kBigInt].xor(value[kBigInt]), this[kLength]);
   }
 
   mod(modulus: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].mod(modulus[kBigInt]), modulus[kHexLength]);
+    return new SRPInt(this[kBigInt].mod(modulus[kBigInt]), modulus[kLength]);
   }
 
   modPow(exponent: SRPInt, modulus: SRPInt): SRPInt {
     return new SRPInt(
       this[kBigInt].modPow(exponent[kBigInt], modulus[kBigInt]),
-      modulus[kHexLength],
+      modulus[kLength],
     );
   }
 
-  pad(paddedHexLength: number): SRPInt {
-    const hexLength = this[kHexLength];
+  pad(paddedLength: number): SRPInt {
+    const length = this[kLength];
 
-    if (hexLength !== null && paddedHexLength < hexLength) {
+    if (length !== null && paddedLength < length) {
       throw new Error("Cannot pad to a shorter length");
     }
 
-    return new SRPInt(this[kBigInt], paddedHexLength);
+    return new SRPInt(this[kBigInt], paddedLength);
   }
 }
