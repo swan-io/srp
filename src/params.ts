@@ -1,12 +1,11 @@
-import { HashAlgorithm, hashBytes } from "./crypto";
+import { hashBytes } from "./crypto";
 import { hash } from "./hash";
 import { SRPInt } from "./SRPInt";
+import { HashAlgorithm, PrimeGroup } from "./types";
 import { padHex } from "./utils";
 
-export type Group = 1024 | 1536 | 2048 | 3072 | 4096 | 6144 | 8192;
-
 // From https://datatracker.ietf.org/doc/html/rfc5054#appendix-A
-const groups: Record<Group, { N: string; g: string }> = {
+const primeGroups: Record<PrimeGroup, { N: string; g: string }> = {
   1024: {
     N: `
 EEAF0AB9 ADB38DD6 9C33F80A FA8FC5E8 60726187 75FF3C0B 9EA2314C
@@ -157,8 +156,11 @@ FC026E47 9558E447 5677E9AA 9E3050E2 765694DF C81F56E8 80B96E71
   },
 };
 
-export const getParams = (algorithm: HashAlgorithm, groupName: Group) => {
-  const group = groups[groupName];
+export const getParams = (
+  hashAlgorithm: HashAlgorithm,
+  primeGroup: PrimeGroup,
+) => {
+  const group = primeGroups[primeGroup];
 
   const N = SRPInt.fromHex(group.N);
   const g = SRPInt.fromHex(padHex(group.g)); // TODO: Make sure every hex is padded (throw if hex % 2 !== 0)
@@ -166,8 +168,8 @@ export const getParams = (algorithm: HashAlgorithm, groupName: Group) => {
   const paddedLength = N.toHex().length;
 
   const PAD = (integer: SRPInt) => integer.pad(paddedLength);
-  const k = hash(algorithm, N, PAD(g));
-  const H = (...input: (SRPInt | string)[]) => hash(algorithm, ...input);
+  const k = hash(hashAlgorithm, N, PAD(g));
+  const H = (...input: (SRPInt | string)[]) => hash(hashAlgorithm, ...input);
 
   return {
     N, // A large safe prime (N = 2q+1, where q is prime)
@@ -175,6 +177,6 @@ export const getParams = (algorithm: HashAlgorithm, groupName: Group) => {
     k, // Multiplier parameter (k = H(N, g) in SRP-6a)
     PAD, // Pad the number to have the same number of bytes as N
     H, // One-way hash function
-    hashBytes: hashBytes[algorithm], // Hash function output length
+    hashBytes: hashBytes[hashAlgorithm], // Hash function output length
   };
 };

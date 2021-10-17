@@ -1,16 +1,16 @@
 {
-  "name": "secure-remote-password",
-  "version": "0.3.1",
+  "name": "@swan-io/srp",
+  "version": "0.1.0",
   "license": "MIT",
-  "description": "A modern SRP implementation for Node.js and web browsers",
+  "description": "A modern SRP implementation for Node.js (v15+) and web browsers",
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
   "contributors": [
-    "Mathieu Actherneone <zoontek@gmail.com>"
+    "Mathieu Acthernoene <mathieu.acthenoene@swan.io>"
   ],
-  "homepage": "https://github.com/zoontek/secure-remote-password#readme",
+  "homepage": "https://github.com/swan-io/srp#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zoontek/secure-remote-password.git"
+    "url": "https://github.com/swan-io/srp.git"
   },
   "source": "src/index.ts",
   "main": "dist/index.js",

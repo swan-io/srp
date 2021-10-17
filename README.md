@@ -1,11 +1,11 @@
-# Secure Remote Password for JavaScript
+# @swan-io/srp
 
-A modern [SRP](http://srp.stanford.edu) implementation for Node.js and Web Browsers.
+A modern [SRP](http://srp.stanford.edu) implementation for Node.js (v15+) and web browsers. Living fork of [secure-remote-password](https://github.com/LinusU/secure-remote-password).
 
 ## Installation
 
 ```sh
-npm install --save secure-remote-password
+yarn add @swan-io/srp
 ```
 
 ## Usage
@@ -14,63 +14,68 @@ npm install --save secure-remote-password
 
 When creating an account with the server, the client will provide a salt and a verifier for the server to store. They are calculated by the client as follows:
 
-```js
-const srp = require("secure-remote-password/client");
+```ts
+import { createSRPClient } from "@swan-io/srp";
+const client = createSRPClient("SHA-256", 2048);
 
 // These should come from the user signing up
 const username = "linus@folkdatorn.se";
 const password = "$uper$ecure";
 
-const salt = srp.generateSalt();
-const privateKey = srp.derivePrivateKey(salt, username, password);
-const verifier = srp.deriveVerifier(privateKey);
+const salt = client.generateSalt();
+const privateKey = await client.derivePrivateKey(salt, username, password);
+const verifier = client.deriveVerifier(privateKey);
 
 console.log(salt);
-//=> FB95867E...
+//=> FB95867E…
 
 console.log(verifier);
-//=> 9392093F...
+//=> 9392093F…
 
 // Send `username`, `salt` and `verifier` to the server
 ```
 
 _note:_ `derivePrivateKey` is provided for completeness with the SRP 6a specification. It is however recommended to use some form of "slow hashing", like [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2), to reduce the viability of a brute force attack against the verifier.
 
+_note:_ The use of a username as part of the verifier calculation means that if the user changes their username they must simultaneously provide an update salt and verifier to the server. If a user is able to login with multiple identifiers (e.g. username, phone number, or email address) you would need a separate verifier for each identifier. To avoid these issues you can leave the `username` blank for purposes of this algorithm. The downside of not using a username is that a server can do an attack to determine whether two users have the same password. For normal apps that trust the server but use SRP just to avoid transmitting plaintext passwords, this may be an acceptable trade-off.
+
 ### Logging in
 
-Authenticating with the server involves mutliple steps.
+Authenticating with the server involves multiple steps.
 
 **1** - The client generates a secret/public ephemeral value pair.
 
-```js
-const srp = require("secure-remote-password/client");
+```ts
+import { createSRPClient } from "@swan-io/srp";
+const client = createSRPClient("SHA-256", 2048);
 
 // This should come from the user logging in
 const username = "linus@folkdatorn.se";
 
-const clientEphemeral = srp.generateEphemeral();
+const clientEphemeral = client.generateEphemeral();
 
 console.log(clientEphemeral.public);
-//=> DE63C51E...
+//=> DE63C51E…
 
 // Send `username` and `clientEphemeral.public` to the server
 ```
 
 **2** - The server receives the client's public ephemeral value and username. Using the username we retrieve the `salt` and `verifier` from our user database. We then generate our own ephemeral value pair.
 
-_note:_ if no user cannot be found in the database, a bogus salt and ephemeral value should be returned, to avoid leaking which users have signed up
+_note:_ if no user cannot be found in the database, a bogus salt and ephemeral value should be returned, to avoid leaking which users have signed up.
 
-```js
-const srp = require("secure-remote-password/server");
+```ts
+import { createSRPServer } from "@swan-io/srp";
+const server = createSRPServer("SHA-256", 2048);
 
 // This should come from the user database
-const salt = "FB95867E...";
-const verifier = "9392093F...";
+const salt = "FB95867E…";
+const verifier = "9392093F…";
 
-const serverEphemeral = srp.generateEphemeral(verifier);
+const serverEphemeral = await server.generateEphemeral(verifier);
 
 console.log(serverEphemeral.public);
-//=> DA084F5C...
+//=> DA084F5C…
 
 // Store `serverEphemeral.secret` for later use
 // Send `salt` and `serverEphemeral.public` to the client
@@ -78,14 +83,15 @@ console.log(serverEphemeral.public);
 
 **3** - The client can now derive the shared strong session key, and a proof of it to provide to the server.
 
-```js
-const srp = require("secure-remote-password/client");
+```ts
+import { createSRPClient } from "@swan-io/srp";
+const client = createSRPClient("SHA-256", 2048);
 
 // This should come from the user logging in
 const password = "$uper$ecret";
+const privateKey = await client.derivePrivateKey(salt, username, password);
 
-const privateKey = srp.derivePrivateKey(salt, username, password);
-const clientSession = srp.deriveSession(
+const clientSession = await client.deriveSession(
   clientEphemeral.secret,
   serverPublicEphemeral,
   salt,
@@ -94,23 +100,24 @@ const clientSession = srp.deriveSession(
 );
 
 console.log(clientSession.key);
-//=> 2A6FF04E...
+//=> 2A6FF04E…
 
 console.log(clientSession.proof);
-//=> 6F8F4AC3
+//=> 6F8F4AC3…
 
 // Send `clientSession.proof` to the server
 ```
 
 **4** - The server is also ready to derive the shared strong session key, and can verify that the client has the same key using the provided proof.
 
-```js
-const srp = require("secure-remote-password/server");
+```ts
+import { createSRPServer } from "@swan-io/srp";
+const server = createSRPServer("SHA-256", 2048);
 
 // Previously stored `serverEphemeral.secret`
-const serverSecretEphemeral = "784D6E83...";
+const serverSecretEphemeral = "784D6E83…";
 
-const serverSession = srp.deriveSession(
+const serverSession = await server.deriveSession(
   serverSecretEphemeral,
   clientPublicEphemeral,
   salt,
@@ -120,68 +127,120 @@ const serverSession = srp.deriveSession(
 );
 
 console.log(serverSession.key);
-//=> 2A6FF04E...
+//=> 2A6FF04E…
 
 console.log(serverSession.proof);
-//=> 92561B95
+//=> 92561B95…
 
 // Send `serverSession.proof` to the client
 ```
 
 **5** - Finally, the client can verify that the server have derived the correct strong session key, using the proof that the server sent back.
 
-```js
-const srp = require("secure-remote-password/client");
+```ts
+import { createSRPClient } from "@swan-io/srp";
+const client = createSRPClient("SHA-256", 2048);
 
-srp.verifySession(clientEphemeral.public, clientSession, serverSessionProof);
-
-// All done!
+await client.verifySession(
+  clientEphemeral.public,
+  clientSession,
+  serverSessionProof,
+);
 ```
 
 ## API
 
-### `Client`
+### Client
 
-```js
-const Client = require("secure-remote-password/client");
+```ts
+import { createSRPClient } from "@swan-io/srp";
+
+type HashAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
+type PrimeGroup = 1024 | 1536 | 2048 | 3072 | 4096 | 6144 | 8192;
+
+const hashAlgorithm: HashAlgorithm = "SHA-256";
+const primeGroup: PrimeGroup = 2048;
+
+const client = createSRPClient(hashAlgorithm, primeGroup);
 ```
 
-#### `Client.generateSalt() => string`
-
-Generate a salt suitable for computing the verifier with.
-
-#### `Client.derivePrivateKey(salt, username, password) => string`
-
-Derives a private key suitable for computing the verifier with.
-
-#### `Client.deriveVerifier(privateKey) => string`
-
-Derive a verifier to be stored for subsequent authentication atempts.
-
-#### `Client.generateEphemeral() => { secret: string, public: string }`
-
-Generate ephemeral values used to initiate an authentication session.
-
-#### `Client.deriveSession(clientSecretEphemeral, serverPublicEphemeral, salt, username, privateKey) => { key: string, proof: string }`
-
-Comptue a session key and proof. The proof is to be sent to the server for verification.
-
-#### `Client.verifySession(clientPublicEphemeral, clientSession, serverSessionProof) => void`
-
-Verifies the server provided session proof. Throws an error if the session proof is invalid.
-
-### `Server`
-
-```js
-const Server = require("secure-remote-password/server");
+```ts
+// Generate a salt suitable for computing the verifier with.
+client.generateSalt() => string;
 ```
 
-#### `generateEphemeral(verifier)`
+```ts
+// Derives a private key suitable for computing the verifier with.
+client.derivePrivateKey(salt: string, username: string, password: string) => Promise<string>;
+```
 
-Generate ephemeral values used to continue an authentication session.
+```ts
+// Derive a verifier to be stored for subsequent authentication attempts.
+client.deriveVerifier(privateKey: string) => string;
+```
 
-#### `deriveSession(serverSecretEphemeral, clientPublicEphemeral, salt, username, verifier, clientSessionProof)`
+```ts
+// Generate ephemeral values used to initiate an authentication session.
+client.generateEphemeral = () => {
+  secret: string;
+  public: string;
+};
+```
 
-Comptue a session key and proof. The proof is to be sent to the client for verification.
+```ts
+// Compute a session key and proof. The proof is to be sent to the server for verification.
+client.deriveSession = (
+  clientSecretEphemeral: string,
+  serverPublicEphemeral: string,
+  salt: string,
+  username: string,
+  privateKey: string,
+) => Promise<{
+  key: string;
+  proof: string;
+}>;
+```
 
-Throws an error if the session proof from the client is invalid.
+```ts
+// Verifies the server provided session proof. Throws an error if the session proof is invalid.
+client.verifySession = (
+  clientPublicEphemeral: string,
+  clientSession: Session,
+  serverSessionProof: string,
+) => Promise<void>;
+```
+
+### Server
+
+```ts
+import { createSRPServer } from "@swan-io/srp";
+
+type HashAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
+type PrimeGroup = 1024 | 1536 | 2048 | 3072 | 4096 | 6144 | 8192;
+
+const hashAlgorithm: HashAlgorithm = "SHA-256";
+const primeGroup: PrimeGroup = 2048;
+
+const server = createSRPServer(hashAlgorithm, primeGroup);
+```
+
+```ts
+// Generate ephemeral values used to continue an authentication session.
+server.generateEphemeral = (verifier: string) => Promise<{
+  public: string;
+  secret: string;
+}>;
+```
+
+```ts
+// Compute a session key and proof. The proof is to be sent to the client for verification.
+// Throws an error if the session proof from the client is invalid.
+server.deriveSession = (
+  serverSecretEphemeral: string,
+  clientPublicEphemeral: string,
+  salt: string,
+  username: string,
+  verifier: string,
+  clientSessionProof: string,
+) => Promise<Session>;
+```

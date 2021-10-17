@@ -1,8 +1,7 @@
+import { HashAlgorithm } from "./types";
+
 const webcrypto: Crypto | undefined =
   typeof window !== "undefined" ? window.crypto : require("crypto").webcrypto;
-
-export type HashAlgorithm = "SHA-1" | "SHA-256" | "SHA-384" | "SHA-512";
-export type HashFunction = (data: ArrayBuffer) => Promise<ArrayBuffer>;
 
 export const hashBytes: Record<HashAlgorithm, number> = {
   "SHA-1": 160 / 8,
@@ -16,11 +15,11 @@ export const getRandomValues = (array: Uint8Array): void => {
 };
 
 export const digest = (
-  algorithm: HashAlgorithm,
+  hashAlgorithm: HashAlgorithm,
   data: ArrayBuffer,
 ): Promise<ArrayBuffer> =>
   webcrypto && webcrypto.subtle
-    ? webcrypto.subtle.digest(algorithm, data)
+    ? webcrypto.subtle.digest(hashAlgorithm, data)
     : Promise.reject(
         new Error(
           "WebCrypto is only available on Node.js 15+ and supported browsers (in secure context)",
