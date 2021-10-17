@@ -32,7 +32,7 @@ module.exports = function sha256(...args) {
       } else {
         throw new TypeError("Expected string or SRPInteger");
       }
-    })
+    }),
   );
 
   return SRPInteger.fromHex(arrayBufferToHex(rawSha256(buffer)));

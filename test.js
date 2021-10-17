@@ -24,7 +24,7 @@ describe("Secure Remote Password", () => {
       serverEphemeral.public,
       salt,
       username,
-      privateKey
+      privateKey,
     );
 
     const serverSession = server.deriveSession(
@@ -33,13 +33,13 @@ describe("Secure Remote Password", () => {
       salt,
       username,
       verifier,
-      clientSession.proof
+      clientSession.proof,
     );
 
     client.verifySession(
       clientEphemeral.public,
       clientSession,
-      serverSession.proof
+      serverSession.proof,
     );
 
     assert.strictEqual(clientSession.key, serverSession.key);
@@ -92,7 +92,7 @@ describe("SRP Test Vectors", () => {
     const x = client.derivePrivateKey(
       testVector["s"],
       testVector["I"],
-      testVector["P"]
+      testVector["P"],
     );
     assert.strictEqual(x, testVector["x"]);
 
@@ -104,7 +104,7 @@ describe("SRP Test Vectors", () => {
       testVector["B"],
       testVector["s"],
       testVector["I"],
-      testVector["x"]
+      testVector["x"],
     );
     assert.strictEqual(clientSession.key, testVector["K"]);
     assert.strictEqual(clientSession.proof, testVector["M1"]);
@@ -115,7 +115,7 @@ describe("SRP Test Vectors", () => {
       testVector["s"],
       testVector["I"],
       testVector["v"],
-      testVector["M1"]
+      testVector["M1"],
     );
     assert.strictEqual(serverSession.key, testVector["K"]);
     assert.strictEqual(serverSession.proof, testVector["M2"]);
