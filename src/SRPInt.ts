@@ -9,12 +9,12 @@ export class SRPInt {
   [kBigInt]: BigInteger;
   [kLength]: number | null;
 
-  constructor(bigInt: BigInteger, length: number | null = null) {
+  constructor(bigInt: BigInteger, length: number | null) {
     this[kBigInt] = bigInt;
     this[kLength] = length;
   }
 
-  static ZERO = new SRPInt(new BigInteger("0"));
+  static ZERO = new SRPInt(new BigInteger("0"), null);
 
   static getRandom(bytes: number): SRPInt {
     const array = new Uint8Array(bytes);
@@ -42,7 +42,7 @@ export class SRPInt {
   }
 
   add(value: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].add(value[kBigInt]));
+    return new SRPInt(this[kBigInt].add(value[kBigInt]), null);
   }
 
   subtract(value: SRPInt): SRPInt {
@@ -50,7 +50,7 @@ export class SRPInt {
   }
 
   multiply(value: SRPInt): SRPInt {
-    return new SRPInt(this[kBigInt].multiply(value[kBigInt]));
+    return new SRPInt(this[kBigInt].multiply(value[kBigInt]), null);
   }
 
   xor(value: SRPInt): SRPInt {
