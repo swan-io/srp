@@ -38,7 +38,6 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
 
       // A % N > 0
       if (A.mod(N).equals(SRPInt.ZERO)) {
-        // fixme: .code, .statusCode, etc.
         throw new Error("The client sent an invalid public ephemeral");
       }
 
@@ -57,7 +56,6 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
       const actual = SRPInt.fromHex(clientSessionProof);
 
       if (!actual.equals(expected)) {
-        // fixme: .code, .statusCode, etc.
         throw new Error("Client provided session proof is invalid");
       }
 
