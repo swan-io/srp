@@ -35,7 +35,7 @@ console.log(verifier);
 // Send `username`, `salt` and `verifier` to the server
 ```
 
-_note:_ `derivePrivateKey` is provided for completeness with the SRP 6a specification. It is however recommended to use some form of "slow hashing", like [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2), to reduce the viability of a brute force attack against the verifier.
+_note:_ `derivePrivateKey` is provided for completeness with the SRP 6a specification. It is, however, recommended to use some form of "slow hashing" like [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2) to reduce the viability of a brute force attack against the verifier.
 
 _note:_ The use of a username as part of the verifier calculation means that if the user changes their username they must simultaneously provide an update salt and verifier to the server. If a user is able to login with multiple identifiers (e.g. username, phone number, or email address) you would need a separate verifier for each identifier. To avoid these issues you can leave the `username` blank for purposes of this algorithm. The downside of not using a username is that a server can do an attack to determine whether two users have the same password. For normal apps that trust the server but use SRP just to avoid transmitting plaintext passwords, this may be an acceptable trade-off.
 
@@ -81,7 +81,7 @@ console.log(serverEphemeral.public);
 // Send `salt` and `serverEphemeral.public` to the client
 ```
 
-**3** - The client can now derive the shared strong session key, and a proof of it to provide to the server.
+**3** - The client can now derive the shared strong session key and a proof of it to provide to the server.
 
 ```ts
 import { createSRPClient } from "@swan-io/srp";
@@ -108,7 +108,7 @@ console.log(clientSession.proof);
 // Send `clientSession.proof` to the server
 ```
 
-**4** - The server is also ready to derive the shared strong session key, and can verify that the client has the same key using the provided proof.
+**4** - The server is also ready to derive the shared strong session key and can verify that the client has the same key using the provided proof.
 
 ```ts
 import { createSRPServer } from "@swan-io/srp";
@@ -135,7 +135,7 @@ console.log(serverSession.proof);
 // Send `serverSession.proof` to the client
 ```
 
-**5** - Finally, the client can verify that the server have derived the correct strong session key, using the proof that the server sent back.
+**5** - Finally, the client can verify that the server has derived the correct strong session key, using the proof that the server sent back.
 
 ```ts
 import { createSRPClient } from "@swan-io/srp";
@@ -223,7 +223,7 @@ type deriveSession = (
 #### client.verifySession
 
 Verifies the server provided session proof.<br />
-⚠️ Throws an error if the session proof is invalid.
+**⚠️ Throws an error if the session proof is invalid.**
 
 ```ts
 type verifySession = (
@@ -261,7 +261,7 @@ type generateEphemeral = (verifier: string) => Promise<{
 #### server.deriveSession
 
 Compute a session key and proof. The proof is to be sent to the client for verification.<br />
-⚠️ Throws an error if the session proof from the client is invalid.
+**⚠️ Throws an error if the session proof from the client is invalid.**
 
 ```ts
 type deriveSession = (
