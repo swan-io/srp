@@ -49,10 +49,9 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
       const S = A.multiply(v.modPow(u, N)).modPow(b, N);
 
       // K = H(S)
-      const K = await H(S);
-
       // M = H(H(N) xor H(g), H(I), s, A, B, K)
-      const M = await H((await H(N)).xor(await H(g)), await H(I), s, A, B, K);
+      const [K, HN, Hg, HI] = await Promise.all([H(S), H(N), H(g), H(I)]);
+      const M = await H(HN.xor(Hg), HI, s, A, B, K);
 
       const expected = M;
       const actual = SRPInt.fromHex(clientSessionProof);

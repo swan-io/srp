@@ -77,10 +77,9 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
       );
 
       // K = H(S)
-      const K = await H(S);
-
       // M = H(H(N) xor H(g), H(I), s, A, B, K)
-      const M = await H((await H(N)).xor(await H(g)), await H(I), s, A, B, K);
+      const [K, HN, Hg, HI] = await Promise.all([H(S), H(N), H(g), H(I)]);
+      const M = await H(HN.xor(Hg), HI, s, A, B, K);
 
       return {
         key: K.toHex(),
