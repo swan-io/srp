@@ -1,9 +1,10 @@
 "use strict";
 
 const arrayBufferToHex = require("array-buffer-to-hex");
-const encodeUtf8 = require("encode-utf8");
 const hexToArrayBuffer = require("hex-to-array-buffer");
 const rawSha256 = require("crypto-digest-sync/sha256");
+
+const encodeUtf8 = TextEncoder.prototype.encode.bind(new TextEncoder());
 
 const SRPInteger = require("../lib/srp-integer");
 

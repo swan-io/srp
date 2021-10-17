@@ -44,7 +44,6 @@
     "array-buffer-to-hex": "^1.0.0",
     "crypto-digest-sync": "^1.0.0",
     "crypto-random-hex": "^1.0.0",
-    "encode-utf8": "^2.0.0",
     "hex-to-array-buffer": "^2.0.0",
     "jsbn": "^1.1.0",
     "pad-start": "^1.0.2"
