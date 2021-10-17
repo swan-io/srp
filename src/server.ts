@@ -16,7 +16,7 @@ export const generateEphemeral = async (
   const v = SRPInt.fromHex(verifier);
 
   // B = kv + g^b             (b = random number)
-  const b = SRPInt.getRandom(params.hashOutputBytes);
+  const b = SRPInt.getRandom(params.hashBytes);
   const B = k.multiply(v).add(g.modPow(b, N)).mod(N);
 
   return {

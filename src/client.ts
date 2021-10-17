@@ -4,7 +4,7 @@ import { Ephemeral, Session } from "./types";
 
 export const generateSalt = (params: Params): string => {
   // s      User's salt
-  const s = SRPInt.getRandom(params.hashOutputBytes);
+  const s = SRPInt.getRandom(params.hashBytes);
 
   return s.toHex();
 };
@@ -51,7 +51,7 @@ export const generateEphemeral = (params: Params): Ephemeral => {
   const { N, g } = params;
 
   // A = g^a                  (a = random number)
-  const a = SRPInt.getRandom(params.hashOutputBytes);
+  const a = SRPInt.getRandom(params.hashBytes);
   const A = g.modPow(a, N);
 
   return {

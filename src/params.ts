@@ -1,3 +1,4 @@
+import { HashAlgorithm, hashBytes } from "./crypto";
 import { hash } from "./hash";
 import { SRPInt } from "./SRPInt";
 import { padHex } from "./utils";
@@ -181,7 +182,7 @@ FC026E47 9558E447 5677E9AA 9E3050E2 765694DF C81F56E8 80B96E71
 // H()    One-way hash function
 // PAD()  Pad the number to have the same number of bytes as N
 
-export const getParams = (algorithm: "SHA-1" | "SHA-256", groupName: Group) => {
+export const getParams = (algorithm: HashAlgorithm, groupName: Group) => {
   const group = groups[groupName];
 
   const N = SRPInt.fromHex(group.N);
@@ -190,15 +191,10 @@ export const getParams = (algorithm: "SHA-1" | "SHA-256", groupName: Group) => {
   const paddedLength = N.toHex().length;
 
   const PAD = (integer: SRPInt) => integer.pad(paddedLength);
-  const H = (...input: (SRPInt | string)[]) => hash(algorithm, ...input);
   const k = hash(algorithm, N, PAD(g));
+  const H = (...input: (SRPInt | string)[]) => hash(algorithm, ...input);
 
-  if (algorithm === "SHA-1") {
-    return { N, g, k, H, PAD, hashOutputBytes: 160 / 8 };
-  } else {
-    return { N, g, k, H, PAD, hashOutputBytes: 256 / 8 };
-  }
+  return { N, g, k, H, PAD, hashBytes: hashBytes[algorithm] };
 };
 
 export type Params = ReturnType<typeof getParams>;
-export const params = getParams("SHA-256", 2048);

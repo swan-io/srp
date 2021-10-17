@@ -1,11 +1,11 @@
-import { digest } from "./crypto";
+import { digest, HashAlgorithm } from "./crypto";
 import { SRPInt } from "./SRPInt";
 import { bufferToHex, hexToBuffer } from "./utils";
 
 const encodeUtf8 = TextEncoder.prototype.encode.bind(new TextEncoder());
 
 export const hash = async (
-  algorithm: "SHA-1" | "SHA-256",
+  algorithm: HashAlgorithm,
   ...input: (SRPInt | string)[]
 ) => {
   const buffers = input.map((item) =>

@@ -89,6 +89,7 @@ test("should match known test vector", async () => {
 
   const params = getParams("SHA-256", 2048);
   const { N, g, k } = params;
+
   expect(N.toHex()).toStrictEqual(testVector["N"]);
   expect(g.toHex()).toStrictEqual(testVector["g"]);
   expect((await k).toHex()).toStrictEqual(testVector["k"]);
@@ -157,7 +158,7 @@ test("should match rfc5054 test vector", async () => {
   };
 
   const params = getParams("SHA-1", 1024);
-  const { N, g, k, H } = params;
+  const { N, g, k } = params;
 
   expect(N.toHex()).toStrictEqual(testVector["N"]);
   expect(g.toHex()).toStrictEqual(testVector["g"]);
