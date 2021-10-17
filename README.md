@@ -164,32 +164,51 @@ const primeGroup: PrimeGroup = 2048;
 const client = createSRPClient(hashAlgorithm, primeGroup);
 ```
 
-```ts
-// Generate a salt suitable for computing the verifier with.
-client.generateSalt() => string;
-```
+#### client.generateSalt
+
+Generate a salt suitable for computing the verifier with.
 
 ```ts
-// Derives a private key suitable for computing the verifier with.
-client.derivePrivateKey(salt: string, username: string, password: string) => Promise<string>;
+type generateSalt() => string;
 ```
 
-```ts
-// Derive a verifier to be stored for subsequent authentication attempts.
-client.deriveVerifier(privateKey: string) => string;
-```
+#### client.derivePrivateKey
+
+Derives a private key suitable for computing the verifier with.
 
 ```ts
-// Generate ephemeral values used to initiate an authentication session.
-client.generateEphemeral = () => {
+type derivePrivateKey = (
+  salt: string,
+  username: string,
+  password: string,
+) => Promise<string>;
+```
+
+#### client.deriveVerifier
+
+Derive a verifier to be stored for subsequent authentication attempts.
+
+```ts
+type deriveVerifier = (privateKey: string) => string;
+```
+
+#### client.generateEphemeral
+
+Generate ephemeral values used to initiate an authentication session.
+
+```ts
+type generateEphemeral = () => {
   secret: string;
   public: string;
 };
 ```
 
+#### client.deriveSession
+
+Compute a session key and proof. The proof is to be sent to the server for verification.
+
 ```ts
-// Compute a session key and proof. The proof is to be sent to the server for verification.
-client.deriveSession = (
+type deriveSession = (
   clientSecretEphemeral: string,
   serverPublicEphemeral: string,
   salt: string,
@@ -201,9 +220,13 @@ client.deriveSession = (
 }>;
 ```
 
+#### client.verifySession
+
+Verifies the server provided session proof.<br />
+⚠️ Throws an error if the session proof is invalid.
+
 ```ts
-// Verifies the server provided session proof. Throws an error if the session proof is invalid.
-client.verifySession = (
+type verifySession = (
   clientPublicEphemeral: string,
   clientSession: Session,
   serverSessionProof: string,
@@ -224,23 +247,32 @@ const primeGroup: PrimeGroup = 2048;
 const server = createSRPServer(hashAlgorithm, primeGroup);
 ```
 
+#### server.generateEphemeral
+
+Generate ephemeral values used to continue an authentication session.
+
 ```ts
-// Generate ephemeral values used to continue an authentication session.
-server.generateEphemeral = (verifier: string) => Promise<{
+type generateEphemeral = (verifier: string) => Promise<{
   public: string;
   secret: string;
 }>;
 ```
 
+#### server.deriveSession
+
+Compute a session key and proof. The proof is to be sent to the client for verification.<br />
+⚠️ Throws an error if the session proof from the client is invalid.
+
 ```ts
-// Compute a session key and proof. The proof is to be sent to the client for verification.
-// Throws an error if the session proof from the client is invalid.
-server.deriveSession = (
+type deriveSession = (
   serverSecretEphemeral: string,
   clientPublicEphemeral: string,
   salt: string,
   username: string,
   verifier: string,
   clientSessionProof: string,
-) => Promise<Session>;
+) => Promise<{
+  key: string;
+  proof: string;
+}>;
 ```
