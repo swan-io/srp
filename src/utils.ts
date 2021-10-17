@@ -1,3 +1,8 @@
+export const sanitizeHex = (hex: string) =>
+  hex.replace(/\s+/g, "").toLowerCase();
+
+export const padHex = (hex: string) => (hex.length % 2 === 0 ? hex : "0" + hex);
+
 export const bufferToHex = (buffer: ArrayBuffer): string => {
   let hex = "";
   const array = new Uint8Array(buffer);

@@ -1,6 +1,6 @@
 import { BigInteger } from "jsbn";
 import { getRandomValues } from "./crypto";
-import { bufferToHex } from "./utils";
+import { bufferToHex, sanitizeHex } from "./utils";
 
 const kBigInt = Symbol("big-int");
 const kHexLength = Symbol("hex-length");
@@ -9,8 +9,8 @@ export class SRPInt {
   [kBigInt]: BigInteger;
   [kHexLength]: number | null;
 
-  constructor(bigInteger: BigInteger, hexLength: number | null) {
-    this[kBigInt] = bigInteger;
+  constructor(bigInt: BigInteger, hexLength: number | null) {
+    this[kBigInt] = bigInt;
     this[kHexLength] = hexLength;
   }
 
@@ -22,8 +22,10 @@ export class SRPInt {
     return SRPInt.fromHex(bufferToHex(array));
   }
 
-  static fromHex(input: string) {
-    return new SRPInt(new BigInteger(input, 16), input.length);
+  static fromHex(hex: string) {
+    // should pad here too
+    const sanitized = sanitizeHex(hex);
+    return new SRPInt(new BigInteger(sanitized, 16), sanitized.length);
   }
 
   toHex() {

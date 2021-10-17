@@ -5,9 +5,12 @@ export const getRandomValues = (array: Uint8Array): void => {
   webcrypto && webcrypto.getRandomValues(array);
 };
 
-export const hash = (data: ArrayBuffer): Promise<ArrayBuffer> =>
+export const digest = (
+  algorithm: "SHA-1" | "SHA-256",
+  data: ArrayBuffer,
+): Promise<ArrayBuffer> =>
   webcrypto && webcrypto.subtle
-    ? webcrypto.subtle.digest("SHA-256", data)
+    ? webcrypto.subtle.digest(algorithm, data)
     : Promise.reject(
         new Error(
           "WebCrypto is only available on Node.js 15+ and supported browsers (in secure context)",
