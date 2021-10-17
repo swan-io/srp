@@ -39,7 +39,7 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
 
       // A % N > 0
       if (A.mod(N).equals(SRPInt.ZERO)) {
-        throw new SRPError("client", "invalidPublicEphemeral");
+        throw new SRPError("Client", "InvalidPublicEphemeral");
       }
 
       // u = H(PAD(A), PAD(B))
@@ -57,7 +57,7 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
       const actual = SRPInt.fromHex(clientSessionProof);
 
       if (!actual.equals(expected)) {
-        throw new SRPError("client", "invalidSessionProof");
+        throw new SRPError("Client", "InvalidSessionProof");
       }
 
       // P = H(A, M, K)
