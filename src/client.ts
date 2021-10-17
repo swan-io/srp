@@ -1,3 +1,4 @@
+import { SRPError } from "./errors";
 import { getParams } from "./params";
 import { SRPInt } from "./SRPInt";
 import { Ephemeral, Session } from "./types";
@@ -63,7 +64,7 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
 
       // B % N > 0
       if (B.mod(N).equals(SRPInt.ZERO)) {
-        throw new Error("The server sent an invalid public ephemeral");
+        throw new SRPError("server", "invalidPublicEphemeral");
       }
 
       // u = H(PAD(A), PAD(B))
@@ -100,7 +101,7 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
       const actual = SRPInt.fromHex(serverSessionProof);
 
       if (!actual.equals(expected)) {
-        throw new Error("Server provided session proof is invalid");
+        throw new SRPError("server", "invalidSessionProof");
       }
     },
   };
