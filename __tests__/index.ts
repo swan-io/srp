@@ -1,29 +1,22 @@
-import * as client from "../src/client";
+import { createSRPClient, createSRPServer } from "../src";
 import { getParams } from "../src/params";
-import * as server from "../src/server";
 import { SRPInt } from "../src/SRPInt";
 
 test("should authenticate a user", async () => {
+  const client = createSRPClient("SHA-256", 2048);
+  const server = createSRPServer("SHA-256", 2048);
+
   const username = "linus@folkdatorn.se";
   const password = "$uper$ecure";
-  const params = getParams("SHA-256", 2048);
 
-  const salt = client.generateSalt(params);
+  const salt = client.generateSalt();
+  const privateKey = await client.derivePrivateKey(salt, username, password);
+  const verifier = client.deriveVerifier(privateKey);
 
-  const privateKey = await client.derivePrivateKey(
-    params,
-    salt,
-    username,
-    password,
-  );
-
-  const verifier = client.deriveVerifier(params, privateKey);
-
-  const clientEphemeral = client.generateEphemeral(params);
-  const serverEphemeral = await server.generateEphemeral(params, verifier);
+  const clientEphemeral = client.generateEphemeral();
+  const serverEphemeral = await server.generateEphemeral(verifier);
 
   const clientSession = await client.deriveSession(
-    params,
     clientEphemeral.secret,
     serverEphemeral.public,
     salt,
@@ -32,7 +25,6 @@ test("should authenticate a user", async () => {
   );
 
   const serverSession = await server.deriveSession(
-    params,
     serverEphemeral.secret,
     clientEphemeral.public,
     salt,
@@ -42,7 +34,6 @@ test("should authenticate a user", async () => {
   );
 
   await client.verifySession(
-    params,
     clientEphemeral.public,
     clientSession,
     serverSession.proof,
@@ -64,6 +55,9 @@ test("SRPInt should keep padding when going back and forth", () => {
 });
 
 test("should match known test vector", async () => {
+  const client = createSRPClient("SHA-256", 2048);
+  const server = createSRPServer("SHA-256", 2048);
+
   const testVector = {
     H: "sha256",
     size: 2048,
@@ -81,21 +75,18 @@ test("should match known test vector", async () => {
     B: "410813e3063f3b4532f2d36413749f39c26c5ceeb1346d3995003c74544c30cba318f981281607ae68dbdc3bee9f0544ada6b13d8ac33217b670973152cf03ef03797615e81dd305342c2e3bb035321d1fd717952e702b09682102d0a5aa25dcee01784a32b0684f75626ca3bf8aec874f2dc11f8926944b06f9948e8ad7649025a58cd9dccdb6b210de00e2283e72baaf93a39b0417dfd1888f841f43d7d41c75b58f654ccb2e8b9c875c42edc34fd3796200312f2abd19b7e2c54b5702cd1a7f4d79fdf73bc418c96466ba122d45474ab6db553417715617f6c3b4a8764279f086acc655e396f85812c90f6f932ce0586168c5deccc9f8beb6891ad13f7caf",
     u: "d56e895d00cb8a9ea81f0c9967522018bca195a485cd59687ebb2a3f5ecda88b",
     S: "30abe90d7091d4617ea8b93f0e649f7fd1ca069bca471e9daf46f5fa5c2b31f05e650da378c0280f144e893ed8137111ff91842c01ce5e3ed8714b4cb23e2b2658230c53153948663239a31b9fdb503325f3bee65f97d081ab90c9453d79c61758e622f4fa4a76b91dfbcf9ab4dac654968756f20b620b500837e297bd51b2d4fde98267703edf69674c3f0e747f910ffec303bc15e004ecaadf3782cd9d2994ed606b7530ad0dd3e9d6de7436fabea3215a13b77a7c59d7fd20ac1df350ad8b8cdcad5ded683073dc2dadeda1350e7d72619bbe652ee53813cb7f3295ada69f53ed595de4de4ea23ffa964157a42785ff6217268f5a912551ba4adb57e8773c",
-
     K: "899f35b485d44d577957e87cfdd48343d97ea2e0c3e8620594e0b8da9ce5da98",
     M1: "7b1867ca8cc93ab5a9e40a5fd504b28f757a41b5cc5ac7de7ac1078130601c42",
     M2: "91385641bf84309d0321b32ae665d508de8dba72342030d0a5bf46a2f05a53ca",
   };
 
-  const params = getParams("SHA-256", 2048);
-  const { N, g, k } = params;
+  const { N, g, k } = getParams("SHA-256", 2048);
 
   expect(N.toHex()).toStrictEqual(testVector["N"]);
   expect(g.toHex()).toStrictEqual(testVector["g"]);
   expect((await k).toHex()).toStrictEqual(testVector["k"]);
 
   const x = await client.derivePrivateKey(
-    params,
     testVector["s"],
     testVector["I"],
     testVector["P"],
@@ -103,11 +94,10 @@ test("should match known test vector", async () => {
 
   expect(x).toStrictEqual(testVector["x"]);
 
-  const v = client.deriveVerifier(params, x);
+  const v = client.deriveVerifier(x);
   expect(v).toStrictEqual(testVector["v"]);
 
   const clientSession = await client.deriveSession(
-    params,
     testVector["a"],
     testVector["B"],
     testVector["s"],
@@ -119,7 +109,6 @@ test("should match known test vector", async () => {
   expect(clientSession.proof).toStrictEqual(testVector["M1"]);
 
   const serverSession = await server.deriveSession(
-    params,
     testVector["b"],
     testVector["A"],
     testVector["s"],
@@ -134,6 +123,9 @@ test("should match known test vector", async () => {
 
 // https://datatracker.ietf.org/doc/html/rfc5054#appendix-B
 test("should match rfc5054 test vector", async () => {
+  const client = createSRPClient("SHA-1", 1024);
+  const server = createSRPServer("SHA-1", 1024);
+
   const testVector = {
     H: "sha1",
     size: 1024,
@@ -157,15 +149,13 @@ test("should match rfc5054 test vector", async () => {
     M2: "9cab3c575a11de37d3ac1421a9f009236a48eb55",
   };
 
-  const params = getParams("SHA-1", 1024);
-  const { N, g, k } = params;
+  const { N, g, k } = getParams("SHA-1", 1024);
 
   expect(N.toHex()).toStrictEqual(testVector["N"]);
   expect(g.toHex()).toStrictEqual(testVector["g"]);
   expect((await k).toHex()).toStrictEqual(testVector["k"]);
 
   const x = await client.derivePrivateKey(
-    params,
     testVector["s"],
     testVector["I"],
     testVector["P"],
@@ -173,11 +163,10 @@ test("should match rfc5054 test vector", async () => {
 
   expect(x).toStrictEqual(testVector["x"]);
 
-  const v = client.deriveVerifier(params, x);
+  const v = client.deriveVerifier(x);
   expect(v).toStrictEqual(testVector["v"]);
 
   const clientSession = await client.deriveSession(
-    params,
     testVector["a"],
     testVector["B"],
     testVector["s"],
@@ -189,7 +178,6 @@ test("should match rfc5054 test vector", async () => {
   expect(clientSession.proof).toStrictEqual(testVector["M1"]);
 
   const serverSession = await server.deriveSession(
-    params,
     testVector["b"],
     testVector["A"],
     testVector["s"],

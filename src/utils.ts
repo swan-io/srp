@@ -16,7 +16,7 @@ export const bufferToHex = (buffer: ArrayBuffer): string => {
 };
 
 export const hexToBuffer = (hex: string): ArrayBuffer => {
-  hex = padHex(hex);
+  // hex = padHex(hex); Not needed for the moment
   const array = new Uint8Array(hex.length / 2);
 
   for (let i = 0; i < hex.length; i += 2) {

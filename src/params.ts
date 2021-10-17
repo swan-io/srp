@@ -194,7 +194,12 @@ export const getParams = (algorithm: HashAlgorithm, groupName: Group) => {
   const k = hash(algorithm, N, PAD(g));
   const H = (...input: (SRPInt | string)[]) => hash(algorithm, ...input);
 
-  return { N, g, k, H, PAD, hashBytes: hashBytes[algorithm] };
+  return {
+    N, // A large safe prime (N = 2q+1, where q is prime)
+    g, // A generator modulo N
+    k, // Multiplier parameter (k = H(N, g) in SRP-6a)
+    PAD, // Pad the number to have the same number of bytes as N
+    H, // One-way hash function
+    hashBytes: hashBytes[algorithm], // Hash function output length
+  };
 };
-
-export type Params = ReturnType<typeof getParams>;
