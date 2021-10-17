@@ -1,7 +1,5 @@
-"use strict";
-
-const sha256 = require("./sha256");
-const SRPInteger = require("./srp-integer");
+import { sha256 } from "./sha256";
+import { SRPInt } from "./SRPInt";
 
 const input = {
   largeSafePrime: `
@@ -22,10 +20,7 @@ const input = {
   paddedLength: 512,
 };
 
-/**
- * @param {SRPInteger} integer
- */
-function pad(integer) {
+function pad(integer: SRPInt) {
   return integer.pad(input.paddedLength);
 }
 
@@ -34,10 +29,14 @@ function pad(integer) {
 // k      Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
 // H()    One-way hash function
 // PAD()  Pad the number to have the same number of bytes as N
-exports.N = SRPInteger.fromHex(input.largeSafePrime.replace(/\s+/g, ""));
-exports.g = SRPInteger.fromHex(input.generatorModulo.replace(/\s+/g, ""));
-exports.k = sha256(exports.N, pad(exports.g));
-exports.H = sha256;
-exports.PAD = pad;
+const N = SRPInt.fromHex(input.largeSafePrime.replace(/\s+/g, ""));
+const g = SRPInt.fromHex(input.generatorModulo.replace(/\s+/g, ""));
 
-exports.hashOutputBytes = input.hashOutputBytes;
+export const params = {
+  N,
+  g,
+  k: sha256(N, pad(g)),
+  H: sha256,
+  PAD: pad,
+  hashOutputBytes: input.hashOutputBytes,
+};
