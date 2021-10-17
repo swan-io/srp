@@ -23,7 +23,6 @@ export class SRPInt {
   }
 
   static fromHex(hex: string): SRPInt {
-    // TODO: Remove support for hex that are not % 2 and the need for kHexLength
     const sanitized = sanitizeHex(hex);
     return new SRPInt(new BigInteger(sanitized, 16), sanitized.length);
   }
@@ -69,13 +68,13 @@ export class SRPInt {
     );
   }
 
-  pad(paddedLength: number): SRPInt {
+  pad(paddedHexLength: number): SRPInt {
     const hexLength = this[kHexLength];
 
-    if (hexLength !== null && paddedLength < hexLength) {
+    if (hexLength !== null && paddedHexLength < hexLength) {
       throw new Error("Cannot pad to a shorter length");
     }
 
-    return new SRPInt(this[kBigInt], paddedLength);
+    return new SRPInt(this[kBigInt], paddedHexLength);
   }
 }

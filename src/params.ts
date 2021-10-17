@@ -163,12 +163,11 @@ export const getParams = (
   const group = primeGroups[primeGroup];
 
   const N = SRPInt.fromHex(group.N);
-  // TODO: Remove support for hex that are not % 2 and the need for kHexLength
   const g = SRPInt.fromHex(padHex(group.g));
 
-  const paddedLength = N.toHex().length;
+  const paddedHexLength = N.toHex().length;
 
-  const PAD = (integer: SRPInt) => integer.pad(paddedLength);
+  const PAD = (integer: SRPInt) => integer.pad(paddedHexLength);
   const k = hash(hashAlgorithm, N, PAD(g));
   const H = (...input: (SRPInt | string)[]) => hash(hashAlgorithm, ...input);
 
