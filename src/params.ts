@@ -171,7 +171,7 @@ FC026E47 9558E447 5677E9AA 9E3050E2 765694DF C81F56E8 80B96E71
 //     9E4AFF73
 //   `,
 //   g: "02",
-//   hashFunction: "sha256",
+//   hashFunction: "SHA-256",
 //   hashOutputBytes: 256 / 8,
 //   paddedLength: 512,
 // };
