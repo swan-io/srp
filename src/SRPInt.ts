@@ -1,6 +1,6 @@
 import { BigInteger } from "jsbn";
 import { getRandomValues } from "./crypto";
-import { bufferToHex, sanitizeHex } from "./utils";
+import { bufferToHex } from "./utils";
 
 const bi = Symbol("big-int");
 
@@ -14,7 +14,7 @@ export class SRPInt {
   static ZERO = new SRPInt(new BigInteger("0"), null);
 
   static fromHex(hex: string): SRPInt {
-    const sanitized = sanitizeHex(hex);
+    const sanitized = hex.replace(/\s+/g, "").toLowerCase();
     return new SRPInt(new BigInteger(sanitized, 16), sanitized.length);
   }
 

@@ -22,6 +22,3 @@ export const hexToBuffer = (hex: string): ArrayBuffer => {
 
   return array.buffer;
 };
-
-export const sanitizeHex = (hex: string) =>
-  hex.replace(/\s+/g, "").toLowerCase();
