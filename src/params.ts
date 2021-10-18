@@ -164,18 +164,18 @@ export const getParams = (
   const N = SRPInt.fromHex(group.N);
   const g = SRPInt.fromHex(group.g);
 
-  const paddedHexLength = N.hexLength ?? 0;
+  const paddedHexLength = N.hexLength ?? 0; // N.hexLength is never null
 
-  const PAD = (integer: SRPInt) => integer.pad(paddedHexLength);
   const H = (...input: (SRPInt | string)[]) => hash(hashAlgorithm, ...input);
+  const PAD = (integer: SRPInt) => integer.pad(paddedHexLength);
   const k = H(N, PAD(g));
 
   return {
     N, // A large safe prime (N = 2q+1, where q is prime)
     g, // A generator modulo N
     k, // Multiplier parameter (k = H(N, g) in SRP-6a)
-    PAD, // Pad the number to have the same number of bytes as N
     H, // One-way hash function
+    PAD, // Pad the number to have the same number of bytes as N
     hashBytes: hashBytes[hashAlgorithm], // Hash function output length
   };
 };
