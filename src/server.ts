@@ -1,8 +1,7 @@
-import { HashAlgorithm, PrimeGroup } from ".";
 import { getParams } from "./params";
 import { SRPError } from "./SRPError";
 import { SRPInt } from "./SRPInt";
-import { Ephemeral, Session } from "./types";
+import { Ephemeral, HashAlgorithm, PrimeGroup, Session } from "./types";
 
 export const createSRPServer = (
   hashAlgorithm: HashAlgorithm,

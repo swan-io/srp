@@ -1,9 +1,8 @@
-import { HashAlgorithm, PrimeGroup } from ".";
 import { deriveKeyWithPBKDF2 } from "./crypto";
 import { getParams } from "./params";
 import { SRPError } from "./SRPError";
 import { SRPInt } from "./SRPInt";
-import { Ephemeral, Session } from "./types";
+import { Ephemeral, HashAlgorithm, PrimeGroup, Session } from "./types";
 import { bufferToHex, hexToBuffer } from "./utils";
 
 export const createSRPClient = (
