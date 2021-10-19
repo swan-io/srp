@@ -26,18 +26,28 @@ const salt = client.generateSalt();
 const privateKey = await client.derivePrivateKey(salt, username, password);
 const verifier = client.deriveVerifier(privateKey);
 
-console.log(salt);
-// => fb95867e…
-
-console.log(verifier);
-// => 9392093f…
-
 // Send `username`, `salt` and `verifier` to the server
 ```
 
-_note:_ `derivePrivateKey` is provided for completeness with the SRP 6a specification. It is, however, recommended to use some form of "slow hashing" like [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2) to reduce the viability of a brute force attack against the verifier.
+Note that `derivePrivateKey` is provided for completeness with the SRP-6a specification. It is, however, recommended to avoid using it as it's highly exposed to brute force attack against the verifier.
 
-_note:_ The use of a username as part of the verifier calculation means that if the user changes their username they must simultaneously provide an update salt and verifier to the server. If a user is able to login with multiple identifiers (e.g. username, phone number, or email address) you would need a separate verifier for each identifier. To avoid these issues you can leave the `username` blank for purposes of this algorithm. The downside of not using a username is that a server can do an attack to determine whether two users have the same password. For normal apps that trust the server but use SRP just to avoid transmitting plaintext passwords, this may be an acceptable trade-off.
+Also, the use of a `username` as part of the verifier calculation means that if it changes, the salt and verifier needs to be updated to. To avoid these issues you can leave the `username` blank for purposes of this algorithm. The downside of not using a `username` is that a server can do an attack to determine whether two users have the same password. This is an acceptable trade-off.
+
+For these reasons, we provide a `deriveSafePrivateKey` that uses [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2) for "slow hashing".
+
+```ts
+import { createSRPClient } from "@swan-io/srp";
+const client = createSRPClient("SHA-256", 2048);
+
+const username = ""; // This is kept blank
+const password = "$uper$ecure"; // This should come from the user logging in
+
+const salt = client.generateSalt();
+const safePrivateKey = await client.deriveSafePrivateKey(salt, password);
+const verifier = client.deriveVerifier(safePrivateKey);
+
+// Send `salt` and `verifier` to the server
+```
 
 ### Logging in
 
@@ -52,9 +62,6 @@ const client = createSRPClient("SHA-256", 2048);
 // This should come from the user logging in
 const username = "linus@folkdatorn.se";
 const clientEphemeral = client.generateEphemeral();
-
-console.log(clientEphemeral.public);
-// => de63c51e…
 
 // Send `username` and `clientEphemeral.public` to the server
 ```
@@ -72,9 +79,6 @@ const salt = "fb95867e…";
 const verifier = "9392093f…";
 
 const serverEphemeral = await server.generateEphemeral(verifier);
-
-console.log(serverEphemeral.public);
-// => da084f5c…
 
 // Store `serverEphemeral.secret` for later use
 // Send `salt` and `serverEphemeral.public` to the client
@@ -98,12 +102,6 @@ const clientSession = await client.deriveSession(
   privateKey,
 );
 
-console.log(clientSession.key);
-// => 2a6ff04e…
-
-console.log(clientSession.proof);
-// => 6f8f4ac3…
-
 // Send `clientSession.proof` to the server
 ```
 
@@ -124,12 +122,6 @@ const serverSession = await server.deriveSession(
   verifier,
   clientSessionProof,
 );
-
-console.log(serverSession.key);
-// => 2a6ff04e…
-
-console.log(serverSession.proof);
-// => 92561b95…
 
 // Send `serverSession.proof` to the client
 ```
@@ -180,6 +172,18 @@ type derivePrivateKey = (
   salt: string,
   username: string,
   password: string,
+) => Promise<string>;
+```
+
+#### client.deriveSafePrivateKey
+
+Derives a private key suitable for computing the verifier with using [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2). By default, it will use the iterations count [recommended by OWASP](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html#pbkdf2).
+
+```ts
+type deriveSafePrivateKey = (
+  salt: string,
+  password: string,
+  iterations?: number,
 ) => Promise<string>;
 ```
 
