@@ -1,10 +1,13 @@
 import { getParams } from "./params";
 import { SRPError } from "./SRPError";
 import { SRPInt } from "./SRPInt";
-import { Ephemeral, Session } from "./types";
+import { Ephemeral, HashAlgorithm, PrimeGroup, Session } from "./types";
 
-export const createSRPServer = (...args: Parameters<typeof getParams>) => {
-  const { N, g, k, H, PAD, hashBytes } = getParams(...args);
+export const createSRPServer = (
+  hashAlgorithm: HashAlgorithm,
+  primeGroup: PrimeGroup,
+) => {
+  const { N, g, k, H, PAD, hashBytes } = getParams(hashAlgorithm, primeGroup);
 
   return {
     generateEphemeral: async (verifier: string): Promise<Ephemeral> => {
