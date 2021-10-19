@@ -1,6 +1,6 @@
-import { HashAlgorithm } from ".";
 import { digest } from "./crypto";
 import { SRPInt } from "./SRPInt";
+import { HashAlgorithm } from "./types";
 
 export const encodeUtf8 = TextEncoder.prototype.encode.bind(new TextEncoder());
 
