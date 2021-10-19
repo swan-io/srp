@@ -1,10 +1,16 @@
+import { HashAlgorithm, PrimeGroup } from ".";
+import { deriveKeyWithPBKDF2 } from "./crypto";
 import { getParams } from "./params";
 import { SRPError } from "./SRPError";
 import { SRPInt } from "./SRPInt";
 import { Ephemeral, Session } from "./types";
+import { bufferToHex, hexToBuffer } from "./utils";
 
-export const createSRPClient = (...args: Parameters<typeof getParams>) => {
-  const { N, g, k, H, PAD, hashBytes } = getParams(...args);
+export const createSRPClient = (
+  hashAlgorithm: HashAlgorithm,
+  primeGroup: PrimeGroup,
+) => {
+  const { N, g, k, H, PAD, hashBytes } = getParams(hashAlgorithm, primeGroup);
 
   return {
     generateSalt: (): string => {
@@ -24,6 +30,19 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
       // x = H(s, H(I | ':' | p))  (s is chosen randomly)
       const x = await H(s, await H(`${I}:${p}`));
       return x.toHex();
+    },
+
+    deriveSafePrivateKey: async (
+      salt: string,
+      password: string,
+      iterations?: number,
+    ): Promise<string> => {
+      const s = hexToBuffer(salt); // User's salt (chosen randomly)
+      const p = password.normalize(); // Cleartext Password
+
+      return bufferToHex(
+        await deriveKeyWithPBKDF2(hashAlgorithm, s, p, iterations),
+      );
     },
 
     deriveVerifier: (privateKey: string): string => {

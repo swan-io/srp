@@ -27,10 +27,10 @@ const privateKey = await client.derivePrivateKey(salt, username, password);
 const verifier = client.deriveVerifier(privateKey);
 
 console.log(salt);
-//=> FB95867E…
+// => fb95867e…
 
 console.log(verifier);
-//=> 9392093F…
+// => 9392093f…
 
 // Send `username`, `salt` and `verifier` to the server
 ```
@@ -51,11 +51,10 @@ const client = createSRPClient("SHA-256", 2048);
 
 // This should come from the user logging in
 const username = "linus@folkdatorn.se";
-
 const clientEphemeral = client.generateEphemeral();
 
 console.log(clientEphemeral.public);
-//=> DE63C51E…
+// => de63c51e…
 
 // Send `username` and `clientEphemeral.public` to the server
 ```
@@ -69,13 +68,13 @@ import { createSRPServer } from "@swan-io/srp";
 const server = createSRPServer("SHA-256", 2048);
 
 // This should come from the user database
-const salt = "FB95867E…";
-const verifier = "9392093F…";
+const salt = "fb95867e…";
+const verifier = "9392093f…";
 
 const serverEphemeral = await server.generateEphemeral(verifier);
 
 console.log(serverEphemeral.public);
-//=> DA084F5C…
+// => da084f5c…
 
 // Store `serverEphemeral.secret` for later use
 // Send `salt` and `serverEphemeral.public` to the client
@@ -100,10 +99,10 @@ const clientSession = await client.deriveSession(
 );
 
 console.log(clientSession.key);
-//=> 2A6FF04E…
+// => 2a6ff04e…
 
 console.log(clientSession.proof);
-//=> 6F8F4AC3…
+// => 6f8f4ac3…
 
 // Send `clientSession.proof` to the server
 ```
@@ -115,7 +114,7 @@ import { createSRPServer } from "@swan-io/srp";
 const server = createSRPServer("SHA-256", 2048);
 
 // Previously stored `serverEphemeral.secret`
-const serverSecretEphemeral = "784D6E83…";
+const serverSecretEphemeral = "784d6e83…";
 
 const serverSession = await server.deriveSession(
   serverSecretEphemeral,
@@ -127,10 +126,10 @@ const serverSession = await server.deriveSession(
 );
 
 console.log(serverSession.key);
-//=> 2A6FF04E…
+// => 2a6ff04e…
 
 console.log(serverSession.proof);
-//=> 92561B95…
+// => 92561b95…
 
 // Send `serverSession.proof` to the client
 ```
