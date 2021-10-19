@@ -1,3 +1,9 @@
+import { HashAlgorithm } from ".";
+import { digest } from "./crypto";
+import { SRPInt } from "./SRPInt";
+
+export const encodeUtf8 = TextEncoder.prototype.encode.bind(new TextEncoder());
+
 export const bufferToHex = (buffer: ArrayBuffer): string => {
   const array = new Uint8Array(buffer);
   let hex = "";
@@ -21,4 +27,26 @@ export const hexToBuffer = (hex: string): ArrayBuffer => {
   }
 
   return array.buffer;
+};
+
+export const hash = async (
+  hashAlgorithm: HashAlgorithm,
+  ...input: (SRPInt | string)[]
+) => {
+  const buffers = input.map((item) =>
+    typeof item === "string" ? encodeUtf8(item) : hexToBuffer(item.toHex()),
+  );
+
+  const combined = new Uint8Array(
+    buffers.reduce((offset, item) => offset + item.byteLength, 0),
+  );
+
+  buffers.reduce((offset, item) => {
+    combined.set(new Uint8Array(item), offset);
+    return offset + item.byteLength;
+  }, 0);
+
+  return SRPInt.fromHex(
+    bufferToHex(await digest(hashAlgorithm, combined.buffer)),
+  );
 };

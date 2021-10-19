@@ -1,7 +1,7 @@
 import { hashBytes } from "./crypto";
-import { hash } from "./hash";
 import { SRPInt } from "./SRPInt";
 import { HashAlgorithm, PrimeGroup } from "./types";
+import { hash } from "./utils";
 
 // From https://datatracker.ietf.org/doc/html/rfc5054#appendix-A
 const primeGroups: Record<PrimeGroup, { N: string; g: string }> = {

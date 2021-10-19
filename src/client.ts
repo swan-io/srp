@@ -18,8 +18,8 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
       password: string,
     ): Promise<string> => {
       const s = SRPInt.fromHex(salt); // User's salt
-      const I = String(username); // Username
-      const p = String(password); // Cleartext Password
+      const I = username.normalize(); // Username
+      const p = password.normalize(); // Cleartext Password
 
       // x = H(s, H(I | ':' | p))  (s is chosen randomly)
       const x = await H(s, await H(`${I}:${p}`));
@@ -56,7 +56,7 @@ export const createSRPClient = (...args: Parameters<typeof getParams>) => {
       const a = SRPInt.fromHex(clientSecretEphemeral); // Secret ephemeral values
       const B = SRPInt.fromHex(serverPublicEphemeral); // Public ephemeral values
       const s = SRPInt.fromHex(salt); // User's salt
-      const I = String(username); // Username
+      const I = username.normalize(); // Username
       const x = SRPInt.fromHex(privateKey); // Private key (derived from p and s)
 
       // A = g^a  (a = random number)

@@ -31,7 +31,7 @@ export const createSRPServer = (...args: Parameters<typeof getParams>) => {
       const b = SRPInt.fromHex(serverSecretEphemeral); // Secret ephemeral values
       const A = SRPInt.fromHex(clientPublicEphemeral); // Public ephemeral values
       const s = SRPInt.fromHex(salt); // User's salt
-      const I = String(username); // Username
+      const I = username.normalize(); // Username
       const v = SRPInt.fromHex(verifier); // Password verifier
 
       // B = kv + g^b  (b = random number)
