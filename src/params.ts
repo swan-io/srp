@@ -175,7 +175,7 @@ export const getParams = (
     g, // A generator modulo N
     k, // Multiplier parameter (k = H(N, g) in SRP-6a)
     H, // One-way hash function
-    PAD, // Pad the number to have the same number of bytes as N
+    PAD, // Pad function to have the same number of bytes as N
     hashBytes: hashBytes[hashAlgorithm], // Hash function output length
   };
 };
