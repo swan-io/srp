@@ -226,7 +226,7 @@ type deriveSession = (
 #### client.verifySession
 
 Verifies the server provided session proof.<br />
-**⚠️ Throws an error if the session proof is invalid.**
+**⚠️ Rejects a SRPError if the session proof is invalid.**
 
 ```ts
 type verifySession = (
@@ -264,7 +264,7 @@ type generateEphemeral = (verifier: string) => Promise<{
 #### server.deriveSession
 
 Compute a session key and proof. The proof is to be sent to the client for verification.<br />
-**⚠️ Throws an error if the session proof from the client is invalid.**
+**⚠️ Rejects a SRPError if the session proof from the client is invalid.**
 
 ```ts
 type deriveSession = (
