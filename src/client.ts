@@ -23,8 +23,8 @@ export const createSRPClient = (
       password: string,
     ): Promise<string> => {
       const s = SRPInt.fromHex(salt); // User's salt
-      const I = username.normalize(); // Username
-      const p = password.normalize(); // Cleartext Password
+      const I = username.normalize("NFKC"); // Username
+      const p = password.normalize("NFKC"); // Cleartext Password
 
       // x = H(s, H(I | ':' | p))  (s is chosen randomly)
       const x = await H(s, await H(`${I}:${p}`));
@@ -37,7 +37,7 @@ export const createSRPClient = (
       iterations?: number,
     ): Promise<string> => {
       const s = hexToBuffer(salt); // User's salt (chosen randomly)
-      const p = password.normalize(); // Cleartext Password
+      const p = password.normalize("NFKC"); // Cleartext Password
 
       return bufferToHex(
         await deriveKeyWithPBKDF2(hashAlgorithm, s, p, iterations),
@@ -74,7 +74,7 @@ export const createSRPClient = (
       const a = SRPInt.fromHex(clientSecretEphemeral); // Secret ephemeral values
       const B = SRPInt.fromHex(serverPublicEphemeral); // Public ephemeral values
       const s = SRPInt.fromHex(salt); // User's salt
-      const I = username.normalize(); // Username
+      const I = username.normalize("NFKC"); // Username
       const x = SRPInt.fromHex(privateKey); // Private key (derived from p and s)
 
       // A = g^a  (a = random number)
