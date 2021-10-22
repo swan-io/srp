@@ -15,7 +15,7 @@ export const createSRPServer = (
 
       // B = kv + g^b  (b = random number)
       const b = SRPInt.getRandom(hashBytes);
-      const B = (await k).multiply(v).add(g.modPow(b, N)).mod(N);
+      const B = (await k()).multiply(v).add(g.modPow(b, N)).mod(N);
 
       return {
         secret: b.toHex(),
@@ -38,7 +38,7 @@ export const createSRPServer = (
       const v = SRPInt.fromHex(verifier); // Password verifier
 
       // B = kv + g^b  (b = random number)
-      const B = (await k).multiply(v).add(g.modPow(b, N)).mod(N);
+      const B = (await k()).multiply(v).add(g.modPow(b, N)).mod(N);
 
       // A % N > 0
       if (A.mod(N).equals(SRPInt.ZERO)) {

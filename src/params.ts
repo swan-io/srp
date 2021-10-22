@@ -168,7 +168,7 @@ export const getParams = (
 
   const H = (...input: (SRPInt | string)[]) => hash(hashAlgorithm, ...input);
   const PAD = (integer: SRPInt) => integer.pad(paddedHexLength);
-  const k = H(N, PAD(g));
+  const k = () => H(N, PAD(g)); // Lazy to avoid throwing error on client / server creation
 
   return {
     N, // A large safe prime (N = 2q+1, where q is prime)

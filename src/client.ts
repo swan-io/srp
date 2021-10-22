@@ -89,7 +89,7 @@ export const createSRPClient = (
       const u = await H(PAD(A), PAD(B));
 
       // S = (B - kg^x) ^ (a + ux)
-      const S = B.subtract((await k).multiply(g.modPow(x, N))).modPow(
+      const S = B.subtract((await k()).multiply(g.modPow(x, N))).modPow(
         a.add(u.multiply(x)),
         N,
       );

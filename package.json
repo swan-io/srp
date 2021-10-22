@@ -1,6 +1,6 @@
 {
   "name": "@swan-io/srp",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "MIT",
   "description": "A modern SRP implementation for Node.js (v15+) and web browsers",
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
