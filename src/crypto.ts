@@ -26,16 +26,13 @@ export const getRandomValues = (array: Uint8Array): void => {
   webcrypto && webcrypto.getRandomValues(array);
 };
 
-export const digest = async (
+export const digest = (
   hashAlgorithm: HashAlgorithm,
   data: ArrayBuffer,
-): Promise<ArrayBuffer> => {
-  if (!webcrypto || !webcrypto.subtle) {
-    throw new Error(unavailableErrorMessage);
-  }
-
-  return webcrypto.subtle.digest(hashAlgorithm, data);
-};
+): Promise<ArrayBuffer> =>
+  webcrypto && webcrypto.subtle
+    ? webcrypto.subtle.digest(hashAlgorithm, data)
+    : Promise.reject(new Error(unavailableErrorMessage));
 
 export const deriveKeyWithPBKDF2 = async (
   hashAlgorithm: HashAlgorithm,
@@ -44,7 +41,7 @@ export const deriveKeyWithPBKDF2 = async (
   iterations = pbkdf2Iterations[hashAlgorithm],
 ): Promise<ArrayBuffer> => {
   if (!webcrypto || !webcrypto.subtle) {
-    throw new Error(unavailableErrorMessage);
+    return Promise.reject(new Error(unavailableErrorMessage));
   }
 
   const pbkdf2Key = await webcrypto.subtle.importKey(
