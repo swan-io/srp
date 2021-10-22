@@ -30,7 +30,7 @@ test("org.bouncycastle.tls.crypto.impl.jcajce.srp test vector", async () => {
 
   expect(N.toHex()).toStrictEqual(testVector["N"]);
   expect(g.toHex()).toStrictEqual(testVector["g"]);
-  expect((await k).toHex()).toStrictEqual(testVector["k"]);
+  expect((await k()).toHex()).toStrictEqual(testVector["k"]);
 
   const x = await client.derivePrivateKey(
     testVector["s"],
@@ -97,7 +97,7 @@ test("RFC 5054 test vector", async () => {
 
   expect(N.toHex()).toStrictEqual(testVector["N"]);
   expect(g.toHex()).toStrictEqual(testVector["g"]);
-  expect((await k).toHex()).toStrictEqual(testVector["k"]);
+  expect((await k()).toHex()).toStrictEqual(testVector["k"]);
 
   const x = await client.derivePrivateKey(
     testVector["s"],
@@ -163,7 +163,7 @@ test("PBKDF2 test vector", async () => {
 
   expect(N.toHex()).toStrictEqual(testVector["N"]);
   expect(g.toHex()).toStrictEqual(testVector["g"]);
-  expect((await k).toHex()).toStrictEqual(testVector["k"]);
+  expect((await k()).toHex()).toStrictEqual(testVector["k"]);
 
   const x = await client.deriveSafePrivateKey(testVector["s"], testVector["P"]);
   expect(x).toStrictEqual(testVector["x"]);
