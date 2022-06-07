@@ -1,6 +1,6 @@
 {
   "name": "@swan-io/srp",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "license": "MIT",
   "description": "A modern SRP implementation for Node.js (v15+) and web browsers",
   "author": "Linus Unnebäck <linus@folkdatorn.se>",
@@ -14,6 +14,8 @@
   },
   "source": "src/index.ts",
   "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
@@ -41,16 +43,16 @@
     "jsbn": "^1.1.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "^7.15.8",
-    "@babel/preset-typescript": "^7.15.0",
-    "@types/jest": "^27.0.2",
-    "@types/jsbn": "^1.2.29",
+    "@babel/preset-env": "^7.18.2",
+    "@babel/preset-typescript": "^7.17.12",
+    "@types/jest": "^28.1.1",
+    "@types/jsbn": "^1.2.30",
     "arraybuffer-equal": "^1.0.4",
-    "babel-jest": "^27.3.1",
-    "jest": "^27.3.1",
-    "microbundle": "^0.14.1",
-    "prettier": "^2.4.1",
+    "babel-jest": "^28.1.1",
+    "jest": "^28.1.1",
+    "microbundle": "^0.15.0",
+    "prettier": "^2.6.2",
     "prettier-plugin-organize-imports": "^2.3.4",
-    "typescript": "^4.4.4"
+    "typescript": "^4.7.3"
   }
 }
