@@ -26,6 +26,10 @@
     "remote",
     "password"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
   "scripts": {
     "build": "yarn clean && microbundle -f cjs,esm src/index.ts",
     "clean": "rm -rf dist",
