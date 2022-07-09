@@ -5,7 +5,11 @@ export const bufferToHex = (buffer: ArrayBuffer): string => {
   let hex = "";
 
   for (let i = 0; i < array.length; i++) {
-    hex += array[i].toString(16).padStart(2, "0");
+    const item = array[i];
+
+    if (item != null) {
+      hex += item.toString(16).padStart(2, "0");
+    }
   }
 
   return hex;

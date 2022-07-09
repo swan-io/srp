@@ -1,4 +1,5 @@
 import isEqual from "arraybuffer-equal";
+import { expect, test } from "vitest";
 import { bufferToHex, hexToBuffer } from "../src/utils";
 
 const numbersToBuffer = (numbers: number[]): ArrayBuffer =>

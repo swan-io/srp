@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import { createSRPClient, createSRPServer } from "../src";
 import { getParams } from "../src/params";
 

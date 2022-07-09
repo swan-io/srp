@@ -1,3 +1,4 @@
+import { expect, test } from "vitest";
 import { SRPInt } from "../src/SRPInt";
 
 test("SRPInt should keep padding when going back and forth", () => {
