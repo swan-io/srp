@@ -145,7 +145,7 @@ const client = createSRPClient(hashAlgorithm, primeGroup);
 Generate a salt suitable for computing the verifier with.
 
 ```ts
-type generateSalt() => string;
+type generateSalt = () => string;
 ```
 
 #### client.derivePrivateKey
