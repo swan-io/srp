@@ -23,31 +23,16 @@ const username = "linus@folkdatorn.se";
 const password = "$uper$ecure";
 
 const salt = client.generateSalt();
-const privateKey = await client.derivePrivateKey(salt, username, password);
+const privateKey = await client.deriveSafePrivateKey(salt, password);
 const verifier = client.deriveVerifier(privateKey);
 
 // Send `username`, `salt` and `verifier` to the server
 ```
 
-Note that `derivePrivateKey` is provided for completeness with the SRP-6a specification. It is, however, recommended to avoid using it as it's highly exposed to brute force attack against the verifier.
+⚠️  Note that `derivePrivateKey` is also provided for completeness with the SRP-6a specification. It is, however, recommended to avoid using it as it's highly exposed to brute force attack against the verifier. Also, the use of a `username` as part of the verifier calculation means that if it changes, the salt and verifier needs to be updated to.
 
-Also, the use of a `username` as part of the verifier calculation means that if it changes, the salt and verifier needs to be updated to. To avoid these issues you can leave the `username` blank for purposes of this algorithm. The downside of not using a `username` is that a server can do an attack to determine whether two users have the same password. This is an acceptable trade-off.
-
-For these reasons, we provide a `deriveSafePrivateKey` that uses [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2) for "slow hashing".
-
-```ts
-import { createSRPClient } from "@swan-io/srp";
-const client = createSRPClient("SHA-256", 2048);
-
-const username = ""; // This is kept blank
-const password = "$uper$ecure"; // This should come from the user logging in
-
-const salt = client.generateSalt();
-const safePrivateKey = await client.deriveSafePrivateKey(salt, password);
-const verifier = client.deriveVerifier(safePrivateKey);
-
-// Send `salt` and `verifier` to the server
-```
+To avoid these issues, we provide a `deriveSafePrivateKey` function that uses [PBKDF2](https://en.wikipedia.org/wiki/PBKDF2) for "slow hashing".<br>
+When using it instead of `derivePrivateKey`, as the private key is not generated using an `username`, you will have to pass an empty string to the `deriveSession` function instead (`""`). The downside of this method is that a server can do an attack to determine whether two users have the same password. This is an acceptable trade-off.
 
 ### Logging in
 
@@ -92,13 +77,13 @@ const client = createSRPClient("SHA-256", 2048);
 
 // This should come from the user logging in
 const password = "$uper$ecret";
-const privateKey = await client.derivePrivateKey(salt, username, password);
+const privateKey = await client.deriveSafePrivateKey(salt, password);
 
 const clientSession = await client.deriveSession(
   clientEphemeral.secret,
   serverPublicEphemeral,
   salt,
-  username,
+  "", // or `username` if you used `derivePrivateKey`
   privateKey,
 );
 
@@ -118,7 +103,7 @@ const serverSession = await server.deriveSession(
   serverSecretEphemeral,
   clientPublicEphemeral,
   salt,
-  username,
+  "", // or `username` if you used `derivePrivateKey`
   verifier,
   clientSessionProof,
 );

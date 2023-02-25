@@ -48,8 +48,8 @@ test("PBKDF2 session test", async () => {
   const password = "password123";
 
   const salt = client.generateSalt();
-  const safePrivateKey = await client.deriveSafePrivateKey(salt, password);
-  const verifier = client.deriveVerifier(safePrivateKey);
+  const privateKey = await client.deriveSafePrivateKey(salt, password);
+  const verifier = client.deriveVerifier(privateKey);
   const clientEphemeral = client.generateEphemeral();
   const serverEphemeral = await server.generateEphemeral(verifier);
 
@@ -58,7 +58,7 @@ test("PBKDF2 session test", async () => {
     serverEphemeral.public,
     salt,
     username,
-    safePrivateKey,
+    privateKey,
   );
 
   const serverSession = await server.deriveSession(
