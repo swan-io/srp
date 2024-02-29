@@ -7,7 +7,10 @@ const bi = Symbol("big-int");
 export class SRPInt {
   [bi]: BigInteger;
 
-  constructor(bigInt: BigInteger, public hexLength: number | null) {
+  constructor(
+    bigInt: BigInteger,
+    public hexLength: number | null,
+  ) {
     this[bi] = bigInt;
   }
 

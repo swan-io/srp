@@ -1,7 +1,10 @@
 import { ErrorCode } from "./types";
 
 export class SRPError extends Error {
-  constructor(public responsible: "client" | "server", public code: ErrorCode) {
+  constructor(
+    public responsible: "client" | "server",
+    public code: ErrorCode,
+  ) {
     super(
       code === "InvalidPublicEphemeral"
         ? `The ${responsible} sent an invalid public ephemeral`
