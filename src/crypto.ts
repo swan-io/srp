@@ -22,7 +22,11 @@ const pbkdf2Iterations: Record<HashAlgorithm, number> = {
 }
 
 export const getRandomValues = (array: Uint8Array): void => {
-  webcrypto?.getRandomValues(array)
+  if (!webcrypto) {
+    throw new Error(unavailableErrorMessage)
+  }
+
+  webcrypto.getRandomValues(array)
 }
 
 export const digest = (

@@ -1,6 +1,6 @@
 import { BigInteger } from 'jsbn'
 import { getRandomValues } from './crypto'
-import { bufferToHex } from './utils'
+import { bufferToHex, sanitizeHex } from './utils'
 
 const bi = Symbol('big-int')
 
@@ -17,7 +17,20 @@ export class SRPInt {
   static ZERO = new SRPInt(new BigInteger('0'), null)
 
   static fromHex(hex: string): SRPInt {
-    const sanitized = hex.replace(/\s+/g, '').toLowerCase()
+    const sanitized = sanitizeHex(hex)
+
+    if (sanitized.length === 0) {
+      throw new RangeError(
+        'Expected string to contain at least one hexadecimal character',
+      )
+    }
+
+    if (!/^[\da-f]+$/.test(sanitized)) {
+      throw new RangeError(
+        'Expected string to only contain hexadecimal characters',
+      )
+    }
+
     return new SRPInt(new BigInteger(sanitized, 16), sanitized.length)
   }
 

@@ -2,19 +2,23 @@ import { getParams } from './params'
 import { SRPError } from './SRPError'
 import { SRPInt } from './SRPInt'
 import type { Ephemeral, HashAlgorithm, PrimeGroup, Session } from './types'
+import { constantTimeEqualHex } from './utils'
 
 export const createSRPServer = (
   hashAlgorithm: HashAlgorithm,
   primeGroup: PrimeGroup,
 ) => {
-  const { N, g, k, H, PAD, hashBytes } = getParams(hashAlgorithm, primeGroup)
+  const { N, g, k, H, PAD, ephemeralSecretBytes } = getParams(
+    hashAlgorithm,
+    primeGroup,
+  )
 
   return {
     generateEphemeral: async (verifier: string): Promise<Ephemeral> => {
       const v = SRPInt.fromHex(verifier) // Password verifier
 
       // B = kv + g^b  (b = random number)
-      const b = SRPInt.getRandom(hashBytes)
+      const b = SRPInt.getRandom(ephemeralSecretBytes)
       const B = (await k()).multiply(v).add(g.modPow(b, N)).mod(N)
 
       return {
@@ -56,10 +60,9 @@ export const createSRPServer = (
       const [K, HN, Hg, HI] = await Promise.all([H(S), H(N), H(g), H(I)])
       const M = await H(HN.xor(Hg), HI, s, A, B, K)
 
-      const expected = M
-      const actual = SRPInt.fromHex(clientSessionProof)
+      const expected = M.toHex()
 
-      if (!actual.equals(expected)) {
+      if (!constantTimeEqualHex(clientSessionProof, expected)) {
         throw new SRPError('client', 'InvalidSessionProof')
       }
 

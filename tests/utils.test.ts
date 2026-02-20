@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test'
-import { bufferToHex, hexToBuffer } from '../src/utils'
+import { bufferToHex, constantTimeEqualHex, hexToBuffer } from '../src/utils'
 
 const numbersToBuffer = (numbers: number[]): ArrayBuffer =>
   new Uint8Array(numbers).buffer
@@ -72,4 +72,16 @@ test('hexToBuffer', () => {
       0x05, 0x04, 0x9c, 0xeb,
     ],
   )
+})
+
+test('hexToBuffer should reject malformed hex input', () => {
+  expect(() => hexToBuffer('abc')).toThrow(RangeError)
+  expect(() => hexToBuffer('zz')).toThrow(RangeError)
+})
+
+test('constantTimeEqualHex', () => {
+  expect(constantTimeEqualHex('AABBCC', 'aabbcc')).toBeTruthy()
+  expect(constantTimeEqualHex('aa', 'ab')).toBeFalsy()
+  expect(constantTimeEqualHex('aa', 'aabb')).toBeFalsy()
+  expect(constantTimeEqualHex('zz', 'aa')).toBeFalsy()
 })

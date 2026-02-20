@@ -12,3 +12,9 @@ test('SRPInt should keep padding when going back and forth', () => {
   expect(SRPInt.fromHex('0000000a').toHex()).toStrictEqual('0000000a')
   expect(SRPInt.fromHex('00000000a').toHex()).toStrictEqual('00000000a')
 })
+
+test('SRPInt should reject malformed hex input', () => {
+  expect(() => SRPInt.fromHex('')).toThrow(RangeError)
+  expect(() => SRPInt.fromHex('gg')).toThrow(RangeError)
+  expect(() => SRPInt.fromHex('-01')).toThrow(RangeError)
+})

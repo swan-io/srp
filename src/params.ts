@@ -165,6 +165,7 @@ export const getParams = (
   const g = SRPInt.fromHex(group.g)
 
   const paddedHexLength = N.hexLength ?? 0 // N.hexLength is never null
+  const ephemeralSecretBytes = Math.max(hashBytes[hashAlgorithm], 32)
 
   const H = (...input: (SRPInt | string)[]) => hash(hashAlgorithm, ...input)
   const PAD = (integer: SRPInt) => integer.pad(paddedHexLength)
@@ -177,5 +178,6 @@ export const getParams = (
     H, // One-way hash function
     PAD, // Pad function to have the same number of bytes as N
     hashBytes: hashBytes[hashAlgorithm], // Hash function output length
+    ephemeralSecretBytes, // Random secret length for ephemeral exponents
   }
 }
