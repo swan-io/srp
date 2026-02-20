@@ -1,17 +1,28 @@
 {
 	"name": "js-srp6a",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"license": "MIT",
 	"description": "A modern SRP implementation for Node.js / Bun and web browsers",
 	"author": "Linus Unnebäck <linus@folkdatorn.se>",
-	"contributors": ["Mathieu Acthernoene <mathieu.acthenoene@swan.io>", "Coratger Lucas"],
+	"contributors": [
+		"Mathieu Acthernoene <mathieu.acthenoene@swan.io>",
+		"Coratger Lucas"
+	],
 	"homepage": "https://github.com/palixir/js-srp6a#readme",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/palixir/js-srp6a.git"
 	},
 	"main": "dist/index.js",
-	"keywords": ["srp", "srp6a", "authentication", "remote", "password", "security", "bun"],
+	"keywords": [
+		"srp",
+		"srp6a",
+		"authentication",
+		"remote",
+		"password",
+		"security",
+		"bun"
+	],
 	"scripts": {
 		"build": "bun build --outdir dist $(pwd)/src/index.ts && bun generate:types",
 		"generate:types": "tsc --project tsconfig.build.json",
@@ -20,7 +31,11 @@
 		"ci": "bun check && bun lint $(pwd) && bun test test",
 		"format": "biome format --write ."
 	},
-	"browserslist": [">0.2%", "not op_mini all", "not dead"],
+	"browserslist": [
+		">0.2%",
+		"not op_mini all",
+		"not dead"
+	],
 	"dependencies": {
 		"jsbn": "1.1.0"
 	},
